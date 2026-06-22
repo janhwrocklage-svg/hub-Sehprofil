@@ -1,0 +1,1883 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mein Sehprofil – hoffmann&amp;brillen</title>
+  <style>
+    :root {
+      --dark:     #07223A;
+      --navy:     #0A3254;
+      --primary:  #0B5EA8;
+      --teal:     #0A9E97;
+      --mint:     #5CD9C8;
+      --orange:   #E8843A;
+      --amber:    #F4B942;
+      --light:    #F0F7FF;
+      --white:    #FFFFFF;
+      --text:     #1A2F3C;
+      --textMid:  #4A6575;
+      --divider:  #D4E8F2;
+      --red:      #C0392B;
+      --green:    #0A9E97;
+      --shadow:   rgba(7,34,58,0.10);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+      background: var(--light);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 60%, var(--primary) 100%);
+      color: var(--white);
+      padding: 0;
+    }
+    .header-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 28px 24px 22px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .logo-mark {
+      width: 52px; height: 52px; flex-shrink: 0;
+      background: var(--teal);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+    }
+    .header-text h1 { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.3px; }
+    .header-text p  { font-size: 0.88rem; opacity: 0.75; margin-top: 3px; }
+    .header-accent {
+      background: rgba(255,255,255,0.07);
+      border-top: 1px solid rgba(255,255,255,0.12);
+      text-align: center;
+      padding: 9px 24px;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ── PROGRESS BAR ── */
+    #progress-wrap {
+      background: var(--navy);
+      padding: 14px 24px;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    .progress-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .progress-dots {
+      display: flex;
+      gap: 6px;
+      flex: 1;
+    }
+    .pdot {
+      height: 6px;
+      flex: 1;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.18);
+      transition: background 0.35s;
+    }
+    .pdot.active  { background: var(--teal); }
+    .pdot.done    { background: var(--mint); }
+    .progress-label {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.55);
+      white-space: nowrap;
+      min-width: 70px;
+      text-align: right;
+    }
+    .progress-label span { color: var(--mint); font-weight: 600; }
+
+    /* ── MAIN ── */
+    main { max-width: 860px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    /* ── STEP CARD ── */
+    .step { display: none; animation: fadeUp 0.3s ease; }
+    .step.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .step-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .step-num {
+      width: 42px; height: 42px; flex-shrink: 0;
+      background: var(--primary);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .step-title h2 { font-size: 1.22rem; color: var(--dark); font-weight: 700; }
+    .step-title p  { font-size: 0.88rem; color: var(--textMid); margin-top: 4px; }
+
+    /* ── QUESTION BLOCK ── */
+    .q-block {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 10px var(--shadow);
+      border: 1px solid var(--divider);
+    }
+    .q-label {
+      font-weight: 600;
+      font-size: 0.96rem;
+      color: var(--dark);
+      margin-bottom: 14px;
+      display: block;
+    }
+    .q-hint {
+      font-size: 0.82rem;
+      color: var(--textMid);
+      margin-bottom: 14px;
+      margin-top: -8px;
+      font-style: italic;
+    }
+
+    /* ── RADIO & CHECKBOX ── */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 9px;
+    }
+    .options-col { display: flex; flex-direction: column; gap: 9px; }
+    .opt-item { display: flex; align-items: center; gap: 11px; cursor: pointer; }
+    .opt-item input[type="radio"],
+    .opt-item input[type="checkbox"] { display: none; }
+    .opt-box {
+      min-width: 170px;
+      border: 2px solid var(--divider);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      color: var(--text);
+      transition: all 0.18s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      user-select: none;
+    }
+    .opt-box.sm { min-width: auto; flex: 1; justify-content: center; }
+    .opt-box:hover { border-color: var(--teal); background: #f0fdfb; }
+    .opt-check {
+      width: 18px; height: 18px; flex-shrink: 0;
+      border: 2px solid var(--divider);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.18s;
+    }
+    .opt-check.sq { border-radius: 4px; }
+    input[type="radio"]:checked  + .opt-box,
+    input[type="checkbox"]:checked + .opt-box {
+      border-color: var(--teal);
+      background: #edfaf8;
+    }
+    input[type="radio"]:checked  + .opt-box .opt-check,
+    input[type="checkbox"]:checked + .opt-box .opt-check {
+      background: var(--teal);
+      border-color: var(--teal);
+    }
+    input[type="radio"]:checked  + .opt-box .opt-check::after,
+    input[type="checkbox"]:checked + .opt-box .opt-check::after {
+      content: '✓';
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* ── TEXTAREA / INPUT ── */
+    .q-text, .q-select {
+      width: 100%;
+      border: 2px solid var(--divider);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--white);
+      resize: vertical;
+      transition: border 0.18s;
+      outline: none;
+    }
+    .q-text:focus, .q-select:focus { border-color: var(--teal); }
+    .q-text { min-height: 80px; }
+
+    /* ── CONTACT FORM ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 18px;
+    }
+    .form-field { display: flex; flex-direction: column; gap: 6px; }
+    .form-field.full { grid-column: 1 / -1; }
+    .field-label {
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--dark);
+    }
+    .field-label .req { color: var(--red); margin-left: 2px; }
+    .field-label .opt { color: var(--textMid); font-weight: 400; font-size: 0.8rem; margin-left: 4px; }
+    .field-input {
+      width: 100%;
+      border: 2px solid var(--divider);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      transition: border 0.18s, background 0.18s;
+    }
+    .field-input:focus { border-color: var(--teal); }
+    .field-input:disabled {
+      background: #eef2f5;
+      color: #9bb0bd;
+      cursor: not-allowed;
+      border-style: dashed;
+    }
+    .field-input.invalid { border-color: var(--red); background: #fdf3f2; }
+    .field-err {
+      color: var(--red);
+      font-size: 0.78rem;
+      display: none;
+    }
+    .field-err.visible { display: block; }
+    .alt-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--textMid);
+      cursor: pointer;
+      margin-top: 2px;
+      user-select: none;
+    }
+    .alt-check input { width: 16px; height: 16px; accent-color: var(--teal); cursor: pointer; }
+    .row-split {
+      display: grid;
+      grid-template-columns: 2.4fr 1fr;
+      gap: 12px;
+    }
+    /* DSGVO consent */
+    .consent-box {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--light);
+      border: 1px solid var(--divider);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 4px;
+    }
+    .consent-box input { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; accent-color: var(--teal); cursor: pointer; }
+    .consent-box label { font-size: 0.82rem; color: var(--textMid); line-height: 1.5; cursor: pointer; }
+    .consent-box.invalid { border-color: var(--red); background: #fdf3f2; }
+
+    /* ── NAV BUTTONS ── */
+    .step-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 28px;
+      gap: 12px;
+    }
+    .btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .btn-primary {
+      background: var(--teal);
+      color: var(--white);
+    }
+    .btn-primary:hover { background: #089088; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(10,158,151,0.35); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--textMid);
+      border: 2px solid var(--divider);
+    }
+    .btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+    .btn-submit {
+      background: linear-gradient(135deg, var(--teal), var(--primary));
+      color: var(--white);
+      padding: 14px 36px;
+      font-size: 1rem;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(10,158,151,0.4); }
+
+    /* ── RECOMMENDATION PAGE ── */
+    #recommendation { display: none; }
+    #recommendation.active { display: block; animation: fadeUp 0.4s ease; }
+
+    .rec-header {
+      background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 60%, #1565a0 100%);
+      border-radius: 14px;
+      padding: 30px 28px;
+      color: var(--white);
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .rec-header::before {
+      content: '';
+      position: absolute; top: -30px; right: -30px;
+      width: 160px; height: 160px;
+      background: rgba(92,217,200,0.10);
+      border-radius: 50%;
+    }
+    .rec-header h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+    .rec-header p  { opacity: 0.75; font-size: 0.9rem; max-width: 580px; line-height: 1.5; }
+    .rec-tag {
+      display: inline-block;
+      background: rgba(92,217,200,0.2);
+      border: 1px solid rgba(92,217,200,0.4);
+      color: var(--mint);
+      padding: 3px 11px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    .rec-stats {
+      display: flex;
+      gap: 22px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    .rec-stat { display: flex; flex-direction: column; }
+    .rec-stat b { font-size: 1.6rem; font-weight: 700; color: var(--mint); line-height: 1; }
+    .rec-stat span { font-size: 0.76rem; opacity: 0.8; margin-top: 4px; }
+
+    .rec-section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 32px 0 10px;
+    }
+    .rec-section-title h3 {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+    .rec-section-line {
+      flex: 1; height: 2px;
+      background: linear-gradient(to right, var(--divider), transparent);
+    }
+    .rec-section-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* ── BADGE LEGEND ── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 0.74rem;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--textMid);
+    }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── REC CARD ── */
+    .rec-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 20px 22px;
+      margin-bottom: 12px;
+      border: 1px solid var(--divider);
+      box-shadow: 0 2px 10px var(--shadow);
+      display: flex;
+      gap: 16px;
+    }
+    .rec-icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      background: var(--light);
+    }
+    .rec-body { flex: 1; }
+    .rec-name {
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: var(--dark);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .rec-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+    .badge-dringend  { background: #fdecea; color: var(--red); }
+    .badge-hoch      { background: #fff3ec; color: var(--orange); }
+    .badge-mittel    { background: #e8f0fb; color: var(--primary); }
+    .badge-basis     { background: #e8f7f6; color: var(--teal); }
+    .badge-ergaenzend { background: #f0f3f5; color: var(--textMid); }
+
+    .rec-dosage {
+      font-size: 0.82rem;
+      color: var(--teal);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .rec-desc { font-size: 0.88rem; color: var(--textMid); line-height: 1.55; }
+
+    /* ── ADVISOR BOX ── */
+    .advisor-box {
+      background: linear-gradient(135deg, #edf7f6 0%, #e8f4fd 100%);
+      border: 1px solid var(--divider);
+      border-left: 4px solid var(--teal);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-top: 28px;
+    }
+    .advisor-box h4 { font-size: 0.9rem; color: var(--teal); font-weight: 700; margin-bottom: 8px; }
+    .advisor-box p  { font-size: 0.85rem; color: var(--textMid); line-height: 1.5; }
+    .advisor-contact {
+      background: rgba(255,255,255,0.8);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 10px 0 14px;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: var(--text);
+    }
+    .advisor-contact strong { color: var(--dark); }
+    .advisor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .advisor-item {
+      font-size: 0.84rem;
+      color: var(--text);
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 6px;
+    }
+    .advisor-item strong { color: var(--dark); }
+
+    /* ── FOOTER ACTIONS ── */
+    .rec-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    .btn-print {
+      background: var(--navy);
+      color: var(--white);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-print:hover { background: var(--dark); }
+    .btn-restart {
+      background: transparent;
+      border: 2px solid var(--divider);
+      color: var(--textMid);
+    }
+    .btn-restart:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ── EXPORT BOX ── */
+    .export-box {
+      background: var(--white);
+      border: 1px solid var(--divider);
+      border-radius: 12px;
+      padding: 20px 22px;
+      margin-top: 30px;
+      box-shadow: 0 2px 10px var(--shadow);
+    }
+    .export-title { font-weight: 700; font-size: 1rem; color: var(--dark); margin-bottom: 4px; }
+    .export-hint { font-size: 0.85rem; color: var(--textMid); margin-bottom: 14px; line-height: 1.5; }
+    .export-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-export-xlsx {
+      background: #1D6F42;
+      color: var(--white);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-export-xlsx:hover { background: #155233; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(29,111,66,0.35); }
+    .btn-export-csv {
+      background: transparent;
+      border: 2px solid var(--teal);
+      color: var(--teal);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .btn-export-csv:hover { background: #edfaf8; }
+
+    .disclaimer {
+      font-size: 0.78rem;
+      color: var(--textMid);
+      text-align: center;
+      margin-top: 20px;
+      line-height: 1.5;
+      padding: 12px;
+      border-top: 1px solid var(--divider);
+    }
+    .disclaimer .rec-date { display: block; margin-bottom: 6px; color: var(--dark); font-weight: 600; }
+
+    /* ── VALIDATION ── */
+    .error-msg {
+      color: var(--red);
+      font-size: 0.82rem;
+      margin-top: 8px;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+
+    /* ── PRINT ── */
+    @media print {
+      header, #progress-wrap, .step-nav, .rec-actions, .export-box { display: none !important; }
+      body { background: white; }
+      .rec-card { break-inside: avoid; }
+      .rec-header { color-adjust: exact; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    @media (max-width: 600px) {
+      .options-grid { grid-template-columns: 1fr; }
+      .advisor-grid { grid-template-columns: 1fr; }
+      .rec-card { flex-direction: column; }
+      .form-grid { grid-template-columns: 1fr; }
+      .row-split { grid-template-columns: 2fr 1fr; }
+    }
+  </style>
+  <!-- SheetJS für echtes .xlsx; bei fehlender Internetverbindung greift automatisch der .xls-Fallback -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-mark">👓</div>
+    <div class="header-text">
+      <h1>Mein persönliches Sehprofil</h1>
+      <p>hoffmann&amp;brillen · Eberswalde &amp; Finowfurt</p>
+    </div>
+  </div>
+  <div class="header-accent">
+    Bitte nehmen Sie sich ca. 5 Minuten Zeit — Ihre Angaben helfen uns, Ihren Termin optimal vorzubereiten.
+  </div>
+</header>
+
+<div id="progress-wrap">
+  <div class="progress-inner">
+    <div class="progress-dots">
+      <div class="pdot" id="pd1"></div>
+      <div class="pdot" id="pd2"></div>
+      <div class="pdot" id="pd3"></div>
+      <div class="pdot" id="pd4"></div>
+      <div class="pdot" id="pd5"></div>
+      <div class="pdot" id="pd6"></div>
+      <div class="pdot" id="pd7"></div>
+    </div>
+    <div class="progress-label">Schritt <span id="progress-current">1</span> / 7</div>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══════════════════════════════════════════
+       STEP 1: Kontaktdaten
+  ══════════════════════════════════════════ -->
+  <div class="step" id="step-1">
+    <div class="step-header">
+      <div class="step-num">1</div>
+      <div class="step-title">
+        <h2>Ihre Kontaktdaten</h2>
+        <p>Damit wir Sie erreichen, Ihren Termin vorbereiten und Ihr persönliches Sehprofil zuordnen können</p>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <div class="form-grid">
+
+        <!-- Anrede -->
+        <div class="form-field">
+          <span class="field-label">Anrede<span class="req">*</span></span>
+          <div style="display:flex; gap:9px;">
+            <label class="opt-item" style="flex:1;"><input type="radio" name="anrede" value="herr"><div class="opt-box sm"><span class="opt-check"></span> Herr</div></label>
+            <label class="opt-item" style="flex:1;"><input type="radio" name="anrede" value="frau"><div class="opt-box sm"><span class="opt-check"></span> Frau</div></label>
+          </div>
+          <div class="field-err" id="err-anrede">Bitte wählen Sie eine Anrede.</div>
+        </div>
+
+        <!-- Titel -->
+        <div class="form-field">
+          <label class="field-label" for="titel">Titel<span class="opt">(optional)</span></label>
+          <select class="field-input" id="titel">
+            <option value="">— Kein Titel —</option>
+            <option value="Dr.">Dr.</option>
+            <option value="Prof.">Prof.</option>
+            <option value="Prof. Dr.">Prof. Dr.</option>
+            <option value="Dr. med.">Dr. med.</option>
+            <option value="Dipl.-Ing.">Dipl.-Ing.</option>
+          </select>
+        </div>
+
+        <!-- Vorname -->
+        <div class="form-field">
+          <label class="field-label" for="vorname">Vorname(n)<span class="req">*</span></label>
+          <input class="field-input" type="text" id="vorname" autocomplete="given-name" placeholder="z. B. Maria">
+          <div class="field-err" id="err-vorname">Bitte geben Sie Ihren Vornamen an.</div>
+        </div>
+
+        <!-- Nachname -->
+        <div class="form-field">
+          <label class="field-label" for="nachname">Nachname<span class="req">*</span></label>
+          <input class="field-input" type="text" id="nachname" autocomplete="family-name" placeholder="z. B. Müller">
+          <div class="field-err" id="err-nachname">Bitte geben Sie Ihren Nachnamen an.</div>
+        </div>
+
+        <!-- Straße + Hausnummer -->
+        <div class="form-field full">
+          <span class="field-label">Straße &amp; Hausnummer<span class="req">*</span></span>
+          <div class="row-split">
+            <div>
+              <input class="field-input" type="text" id="strasse" autocomplete="address-line1" placeholder="Straße">
+              <div class="field-err" id="err-strasse">Bitte geben Sie Ihre Straße an.</div>
+            </div>
+            <div>
+              <input class="field-input" type="text" id="hausnummer" placeholder="Nr.">
+              <div class="field-err" id="err-hausnummer">Pflicht.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PLZ -->
+        <div class="form-field">
+          <label class="field-label" for="plz">Postleitzahl<span class="req">*</span></label>
+          <input class="field-input" type="text" id="plz" inputmode="numeric" maxlength="5" autocomplete="postal-code" placeholder="z. B. 16225">
+          <div class="field-err" id="err-plz">Bitte eine gültige 5-stellige PLZ angeben.</div>
+        </div>
+
+        <!-- Wohnort -->
+        <div class="form-field">
+          <label class="field-label" for="wohnort">Wohnort<span class="req">*</span></label>
+          <input class="field-input" type="text" id="wohnort" autocomplete="address-level2" placeholder="z. B. Eberswalde">
+          <div class="field-err" id="err-wohnort">Bitte geben Sie Ihren Wohnort an.</div>
+        </div>
+
+        <!-- Festnetz -->
+        <div class="form-field">
+          <label class="field-label" for="festnetz">Festnetz<span class="opt">(optional)</span></label>
+          <input class="field-input" type="tel" id="festnetz" autocomplete="tel" placeholder="z. B. 03334 123456">
+        </div>
+
+        <!-- Mobilfunk -->
+        <div class="form-field">
+          <label class="field-label" for="mobil">Mobilfunk<span class="req" id="mobil-req">*</span></label>
+          <input class="field-input" type="tel" id="mobil" autocomplete="tel" placeholder="z. B. 0151 23456789">
+          <label class="alt-check"><input type="checkbox" id="keinMobil" onchange="toggleAlt('keinMobil','mobil','err-mobil')"> Keine Mobilfunknummer vorhanden</label>
+          <div class="field-err" id="err-mobil">Bitte Mobilnummer angeben oder „keine vorhanden" wählen.</div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-field full">
+          <label class="field-label" for="email">E-Mail-Adresse<span class="req" id="email-req">*</span></label>
+          <input class="field-input" type="email" id="email" autocomplete="email" placeholder="z. B. maria.mueller@email.de">
+          <label class="alt-check"><input type="checkbox" id="keinEmail" onchange="toggleAlt('keinEmail','email','err-email')"> Keine E-Mail-Adresse vorhanden</label>
+          <div class="field-err" id="err-email">Bitte gültige E-Mail angeben oder „keine vorhanden" wählen.</div>
+        </div>
+
+        <!-- Mindestens ein Kontaktweg -->
+        <div class="field-err full" id="err-kontaktweg">Bitte geben Sie mindestens eine Kontaktmöglichkeit an (Festnetz, Mobil oder E-Mail).</div>
+
+        <!-- DSGVO Einwilligung -->
+        <div class="consent-box" id="consent-box">
+          <input type="checkbox" id="consent">
+          <label for="consent">Ich willige ein, dass meine Angaben zur Vorbereitung und Durchführung meiner Beratung bei hoffmann&amp;brillen gespeichert und verarbeitet werden. Die Daten werden vertraulich behandelt und nicht an Dritte weitergegeben. (Pflichtangabe)<span class="req">*</span></label>
+        </div>
+        <div class="field-err full" id="err-consent">Bitte bestätigen Sie die Einwilligung, um fortzufahren.</div>
+
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <div></div>
+      <button class="btn btn-primary" onclick="nextStep(1)">Weiter →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 2: Über Sie
+  ══════════════════════════════════════════ -->
+  <div class="step" id="step-2">
+    <div class="step-header">
+      <div class="step-num">2</div>
+      <div class="step-title">
+        <h2>Über Sie</h2>
+        <p>Kurze Angaben zu Ihrer Person und Ihren bisherigen Sehhilfen</p>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">In welcher Altersgruppe befinden Sie sich?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="radio" name="alter" value="<30"><div class="opt-box"><span class="opt-check"></span> Unter 30 Jahre</div></label>
+        <label class="opt-item"><input type="radio" name="alter" value="30-39"><div class="opt-box"><span class="opt-check"></span> 30 – 39 Jahre</div></label>
+        <label class="opt-item"><input type="radio" name="alter" value="40-49"><div class="opt-box"><span class="opt-check"></span> 40 – 49 Jahre</div></label>
+        <label class="opt-item"><input type="radio" name="alter" value="50-59"><div class="opt-box"><span class="opt-check"></span> 50 – 59 Jahre</div></label>
+        <label class="opt-item"><input type="radio" name="alter" value="60+"><div class="opt-box"><span class="opt-check"></span> 60 Jahre oder älter</div></label>
+      </div>
+      <div class="error-msg" id="err-alter">Bitte wählen Sie Ihre Altersgruppe.</div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Tragen Sie derzeit eine Sehhilfe?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="radio" name="sehhilfe" value="keine"><div class="opt-box"><span class="opt-check"></span> Nein, keine</div></label>
+        <label class="opt-item"><input type="radio" name="sehhilfe" value="brille"><div class="opt-box"><span class="opt-check"></span> Brille</div></label>
+        <label class="opt-item"><input type="radio" name="sehhilfe" value="kontaktlinsen"><div class="opt-box"><span class="opt-check"></span> Kontaktlinsen</div></label>
+        <label class="opt-item"><input type="radio" name="sehhilfe" value="beide"><div class="opt-box"><span class="opt-check"></span> Brille &amp; Kontaktlinsen</div></label>
+      </div>
+      <div class="error-msg" id="err-sehhilfe">Bitte wählen Sie eine Option.</div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Wann war Ihre letzte Augenuntersuchung?</span>
+      <div class="options-col">
+        <label class="opt-item"><input type="radio" name="letzteUntersuchung" value="nie"><div class="opt-box"><span class="opt-check"></span> Noch nie / So lange her, dass ich es nicht weiß</div></label>
+        <label class="opt-item"><input type="radio" name="letzteUntersuchung" value="<1"><div class="opt-box"><span class="opt-check"></span> Vor weniger als einem Jahr</div></label>
+        <label class="opt-item"><input type="radio" name="letzteUntersuchung" value="1-2"><div class="opt-box"><span class="opt-check"></span> Vor 1 – 2 Jahren</div></label>
+        <label class="opt-item"><input type="radio" name="letzteUntersuchung" value=">2"><div class="opt-box"><span class="opt-check"></span> Vor mehr als 2 Jahren</div></label>
+      </div>
+      <div class="error-msg" id="err-untersuchung">Bitte wählen Sie eine Option.</div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Was ist der Anlass Ihres Besuchs? (optional)</span>
+      <p class="q-hint">z. B. „Brille passt nicht mehr", „Kopfschmerzen beim Lesen", „Routinecheck" …</p>
+      <textarea class="q-text" id="anlass" placeholder="Ihre Anmerkung …"></textarea>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn btn-ghost" onclick="goToStep(1)">← Zurück</button>
+      <button class="btn btn-primary" onclick="nextStep(2)">Weiter →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 3: Aktuelle Beschwerden
+  ══════════════════════════════════════════ -->
+  <div class="step" id="step-3">
+    <div class="step-header">
+      <div class="step-num">3</div>
+      <div class="step-title">
+        <h2>Aktuelle Beschwerden</h2>
+        <p>Bitte wählen Sie alles aus, was auf Sie zutrifft (Mehrfachauswahl möglich)</p>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Welche der folgenden Beschwerden kennen Sie?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="checkbox" name="beschwerden" value="ferne"><div class="opt-box"><span class="opt-check sq"></span> Verschwommenes Sehen in der Ferne</div></label>
+        <label class="opt-item"><input type="checkbox" name="beschwerden" value="naehe"><div class="opt-box"><span class="opt-check sq"></span> Verschwommenes Sehen in der Nähe</div></label>
+        <label class="opt-item"><input type="checkbox" name="beschwerden" value="kopfschmerzen"><div class="opt-box"><span class="opt-check sq"></span> Kopfschmerzen beim Lesen oder am Bildschirm</div></label>
+        <label class="opt-item"><input type="checkbox" name="beschwerden" value="muede"><div class="opt-box"><span class="opt-check sq"></span> Müde, schwere oder brennende Augen</div></label>
+        <label class="opt-item"><input type="checkbox" name="beschwerden" value="doppelbilder"><div class="opt-box"><span class="opt-check sq"></span> Doppelbilder (gelegentlich oder dauerhaft)</div></label>
+        <label class="opt-item"><input type="checkbox" name="beschwerden" value="blendung"><div class="opt-box"><span class="opt-check sq"></span> Licht- oder Blendempfindlichkeit</div></label>
+        <label class="opt-item"><input type="checkbox" name="beschwerden" value="nacht"><div class="opt-box"><span class="opt-check sq"></span> Schlechtes Sehen bei Dämmerung oder Nacht</div></label>
+        <label class="opt-item"><input type="checkbox" name="beschwerden" value="flimmern"><div class="opt-box"><span class="opt-check sq"></span> Flimmern, Blitze oder Rußflocken im Sehfeld</div></label>
+        <label class="opt-item"><input type="checkbox" name="beschwerden" value="trocken"><div class="opt-box"><span class="opt-check sq"></span> Trockene oder juckende Augen</div></label>
+        <label class="opt-item"><input type="checkbox" name="beschwerden" value="rot"><div class="opt-box"><span class="opt-check sq"></span> Häufig gerötete Augen</div></label>
+        <label class="opt-item"><input type="checkbox" name="beschwerden" value="keine"><div class="opt-box"><span class="opt-check sq"></span> Keine der genannten Beschwerden</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Weitere Beschwerden oder Hinweise? (optional)</span>
+      <textarea class="q-text" id="beschwerdenSonstige" placeholder="z. B. seit wann, unter welchen Umständen …"></textarea>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn btn-ghost" onclick="goToStep(2)">← Zurück</button>
+      <button class="btn btn-primary" onclick="nextStep(3)">Weiter →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 4: Bildschirm & Beruf
+  ══════════════════════════════════════════ -->
+  <div class="step" id="step-4">
+    <div class="step-header">
+      <div class="step-num">4</div>
+      <div class="step-title">
+        <h2>Bildschirm &amp; Beruf</h2>
+        <p>Wie sehen Ihr Arbeitsalltag und Ihre digitalen Gewohnheiten aus?</p>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Wie viele Stunden verbringen Sie täglich vor Bildschirmen (Beruf + Freizeit)?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="radio" name="bildschirmStunden" value="<2"><div class="opt-box"><span class="opt-check"></span> Unter 2 Stunden</div></label>
+        <label class="opt-item"><input type="radio" name="bildschirmStunden" value="2-4"><div class="opt-box"><span class="opt-check"></span> 2 – 4 Stunden</div></label>
+        <label class="opt-item"><input type="radio" name="bildschirmStunden" value="4-6"><div class="opt-box"><span class="opt-check"></span> 4 – 6 Stunden</div></label>
+        <label class="opt-item"><input type="radio" name="bildschirmStunden" value=">6"><div class="opt-box"><span class="opt-check"></span> Mehr als 6 Stunden</div></label>
+      </div>
+      <div class="error-msg" id="err-bildschirm">Bitte wählen Sie eine Option.</div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Welche Geräte nutzen Sie hauptsächlich? (Mehrfachauswahl)</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="checkbox" name="geraete" value="pc"><div class="opt-box"><span class="opt-check sq"></span> PC / Laptop</div></label>
+        <label class="opt-item"><input type="checkbox" name="geraete" value="tablet"><div class="opt-box"><span class="opt-check sq"></span> Tablet</div></label>
+        <label class="opt-item"><input type="checkbox" name="geraete" value="smartphone"><div class="opt-box"><span class="opt-check sq"></span> Smartphone</div></label>
+        <label class="opt-item"><input type="checkbox" name="geraete" value="tv"><div class="opt-box"><span class="opt-check sq"></span> Fernseher</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Welcher beruflichen Tätigkeit gehen Sie überwiegend nach?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="radio" name="beruf" value="buero"><div class="opt-box"><span class="opt-check"></span> Büro / Verwaltung / Bildschirmarbeit</div></label>
+        <label class="opt-item"><input type="radio" name="beruf" value="handwerk"><div class="opt-box"><span class="opt-check"></span> Handwerk / Technik / Präzisionsarbeit</div></label>
+        <label class="opt-item"><input type="radio" name="beruf" value="fahrdienst"><div class="opt-box"><span class="opt-check"></span> Fahrdienst / Außendienst / Transport</div></label>
+        <label class="opt-item"><input type="radio" name="beruf" value="kreativ"><div class="opt-box"><span class="opt-check"></span> Kreativ / Design / Kunst</div></label>
+        <label class="opt-item"><input type="radio" name="beruf" value="sozial"><div class="opt-box"><span class="opt-check"></span> Sozial / Pflege / Medizin</div></label>
+        <label class="opt-item"><input type="radio" name="beruf" value="rente"><div class="opt-box"><span class="opt-check"></span> Rentner/in / Nicht berufstätig</div></label>
+        <label class="opt-item"><input type="radio" name="beruf" value="sonstiges"><div class="opt-box"><span class="opt-check"></span> Sonstiges</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Gibt es besondere Sehanforderungen in Ihrem Beruf oder Alltag? (optional)</span>
+      <p class="q-hint">z. B. „Notenlesen", „Feine Lötarbeiten", „Bildschirm in verschiedenen Abständen" …</p>
+      <textarea class="q-text" id="sehanforderungen" placeholder="Ihre Anmerkung …"></textarea>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn btn-ghost" onclick="goToStep(3)">← Zurück</button>
+      <button class="btn btn-primary" onclick="nextStep(4)">Weiter →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 5: Mobilität & Freizeit
+  ══════════════════════════════════════════ -->
+  <div class="step" id="step-5">
+    <div class="step-header">
+      <div class="step-num">5</div>
+      <div class="step-title">
+        <h2>Mobilität &amp; Freizeit</h2>
+        <p>Autofahren, Sport und Aufenthalt im Freien beeinflussen Ihre Sehbedürfnisse erheblich</p>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Wie oft fahren Sie Auto?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="radio" name="autofahren" value="taeglich"><div class="opt-box"><span class="opt-check"></span> Täglich oder fast täglich</div></label>
+        <label class="opt-item"><input type="radio" name="autofahren" value="gelegentlich"><div class="opt-box"><span class="opt-check"></span> Gelegentlich (mehrmals pro Woche)</div></label>
+        <label class="opt-item"><input type="radio" name="autofahren" value="selten"><div class="opt-box"><span class="opt-check"></span> Selten / Kaum</div></label>
+        <label class="opt-item"><input type="radio" name="autofahren" value="nie"><div class="opt-box"><span class="opt-check"></span> Gar nicht</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Fahren Sie auch nachts oder bei Dämmerung Auto?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="radio" name="nachtfahrten" value="regelmaessig"><div class="opt-box"><span class="opt-check"></span> Regelmäßig</div></label>
+        <label class="opt-item"><input type="radio" name="nachtfahrten" value="selten"><div class="opt-box"><span class="opt-check"></span> Gelegentlich</div></label>
+        <label class="opt-item"><input type="radio" name="nachtfahrten" value="nie"><div class="opt-box"><span class="opt-check"></span> Nie / Kein Auto</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Welche Sportarten betreiben Sie? (Mehrfachauswahl)</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="checkbox" name="sport" value="ball"><div class="opt-box"><span class="opt-check sq"></span> Ball- / Mannschaftssport</div></label>
+        <label class="opt-item"><input type="checkbox" name="sport" value="rad"><div class="opt-box"><span class="opt-check sq"></span> Radfahren / Mountainbike</div></label>
+        <label class="opt-item"><input type="checkbox" name="sport" value="golf"><div class="opt-box"><span class="opt-check sq"></span> Golf / Bogenschießen / Schießsport</div></label>
+        <label class="opt-item"><input type="checkbox" name="sport" value="wasser"><div class="opt-box"><span class="opt-check sq"></span> Schwimmen / Wassersport</div></label>
+        <label class="opt-item"><input type="checkbox" name="sport" value="ausdauer"><div class="opt-box"><span class="opt-check sq"></span> Laufen / Ausdauersport</div></label>
+        <label class="opt-item"><input type="checkbox" name="sport" value="kampf"><div class="opt-box"><span class="opt-check sq"></span> Kampfsport / Klettern</div></label>
+        <label class="opt-item"><input type="checkbox" name="sport" value="kein"><div class="opt-box"><span class="opt-check sq"></span> Ich treibe keinen Sport</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Wie viel Zeit verbringen Sie im Freien (Tageslicht)?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="radio" name="draussen" value="viel"><div class="opt-box"><span class="opt-check"></span> Täglich viel (1+ Stunden)</div></label>
+        <label class="opt-item"><input type="radio" name="draussen" value="gelegentlich"><div class="opt-box"><span class="opt-check"></span> Gelegentlich</div></label>
+        <label class="opt-item"><input type="radio" name="draussen" value="drinnen"><div class="opt-box"><span class="opt-check"></span> Überwiegend drinnen</div></label>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn btn-ghost" onclick="goToStep(4)">← Zurück</button>
+      <button class="btn btn-primary" onclick="nextStep(5)">Weiter →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 6: Gesundheit & Familie
+  ══════════════════════════════════════════ -->
+  <div class="step" id="step-6">
+    <div class="step-header">
+      <div class="step-num">6</div>
+      <div class="step-title">
+        <h2>Gesundheit &amp; Familiengeschichte</h2>
+        <p>Allgemeine Erkrankungen und familiäre Vorbelastungen können das Sehvermögen direkt beeinflussen</p>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Sind bei Ihnen folgende Erkrankungen bekannt? (Mehrfachauswahl)</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="checkbox" name="erkrankungen" value="diabetes"><div class="opt-box"><span class="opt-check sq"></span> Diabetes mellitus</div></label>
+        <label class="opt-item"><input type="checkbox" name="erkrankungen" value="bluthochdruck"><div class="opt-box"><span class="opt-check sq"></span> Bluthochdruck (Hypertonie)</div></label>
+        <label class="opt-item"><input type="checkbox" name="erkrankungen" value="schilddrüse"><div class="opt-box"><span class="opt-check sq"></span> Schilddrüsenerkrankung</div></label>
+        <label class="opt-item"><input type="checkbox" name="erkrankungen" value="rheuma"><div class="opt-box"><span class="opt-check sq"></span> Rheuma / Autoimmunerkrankung</div></label>
+        <label class="opt-item"><input type="checkbox" name="erkrankungen" value="keine"><div class="opt-box"><span class="opt-check sq"></span> Keine bekannt</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Gibt es in Ihrer Familie Augenerkrankungen? (Mehrfachauswahl)</span>
+      <div class="options-col">
+        <label class="opt-item"><input type="checkbox" name="familienGeschichte" value="glaukom"><div class="opt-box"><span class="opt-check sq"></span> Grüner Star (Glaukom)</div></label>
+        <label class="opt-item"><input type="checkbox" name="familienGeschichte" value="katarakt"><div class="opt-box"><span class="opt-check sq"></span> Grauer Star (Katarakt)</div></label>
+        <label class="opt-item"><input type="checkbox" name="familienGeschichte" value="amd"><div class="opt-box"><span class="opt-check sq"></span> Altersbedingte Makuladegeneration (AMD)</div></label>
+        <label class="opt-item"><input type="checkbox" name="familienGeschichte" value="netzhaut"><div class="opt-box"><span class="opt-check sq"></span> Netzhauterkrankung / Netzhautablösung</div></label>
+        <label class="opt-item"><input type="checkbox" name="familienGeschichte" value="keine"><div class="opt-box"><span class="opt-check sq"></span> Keine bekannt / Weiß nicht</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Nehmen Sie regelmäßig Medikamente ein?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="radio" name="medikamente" value="nein"><div class="opt-box"><span class="opt-check"></span> Nein</div></label>
+        <label class="opt-item"><input type="radio" name="medikamente" value="ja"><div class="opt-box"><span class="opt-check"></span> Ja</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Anmerkungen zu Ihrer Gesundheit oder Medikamenten? (optional)</span>
+      <p class="q-hint">Manche Medikamente beeinflussen Augeninnendruck, Tränenfilm oder Pupillenreaktion</p>
+      <textarea class="q-text" id="medikamenteText" placeholder="Ihre Anmerkung …"></textarea>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn btn-ghost" onclick="goToStep(5)">← Zurück</button>
+      <button class="btn btn-primary" onclick="nextStep(6)">Weiter →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 7: Ernährung & Lifestyle
+  ══════════════════════════════════════════ -->
+  <div class="step" id="step-7">
+    <div class="step-header">
+      <div class="step-num">7</div>
+      <div class="step-title">
+        <h2>Ernährung &amp; Lifestyle</h2>
+        <p>Letzte Fragen — dann erstellen wir Ihre persönliche Empfehlung</p>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Wie würden Sie Ihre Ernährung beschreiben?</span>
+      <div class="options-col">
+        <label class="opt-item"><input type="radio" name="ernaehrung" value="ausgewogen"><div class="opt-box"><span class="opt-check"></span> Ausgewogen — viel Obst, Gemüse, Vollkorn</div></label>
+        <label class="opt-item"><input type="radio" name="ernaehrung" value="gemischt"><div class="opt-box"><span class="opt-check"></span> Gemischte Kost — nicht besonders bewusst</div></label>
+        <label class="opt-item"><input type="radio" name="ernaehrung" value="wenig_gemüse"><div class="opt-box"><span class="opt-check"></span> Wenig Obst und Gemüse, oft Fertiggerichte</div></label>
+        <label class="opt-item"><input type="radio" name="ernaehrung" value="vegetarisch"><div class="opt-box"><span class="opt-check"></span> Vegetarisch</div></label>
+        <label class="opt-item"><input type="radio" name="ernaehrung" value="vegan"><div class="opt-box"><span class="opt-check"></span> Vegan</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Wie oft essen Sie Seefisch (Lachs, Hering, Makrele …)?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="radio" name="fisch" value="regelmaessig"><div class="opt-box"><span class="opt-check"></span> Mehrmals pro Woche</div></label>
+        <label class="opt-item"><input type="radio" name="fisch" value="woechentlich"><div class="opt-box"><span class="opt-check"></span> Etwa einmal pro Woche</div></label>
+        <label class="opt-item"><input type="radio" name="fisch" value="selten"><div class="opt-box"><span class="opt-check"></span> Selten (1× pro Monat oder weniger)</div></label>
+        <label class="opt-item"><input type="radio" name="fisch" value="nie"><div class="opt-box"><span class="opt-check"></span> Nie</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Rauchen Sie (aktuell oder früher)?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="radio" name="rauchen" value="nein"><div class="opt-box"><span class="opt-check"></span> Nein, nie geraucht</div></label>
+        <label class="opt-item"><input type="radio" name="rauchen" value="ja"><div class="opt-box"><span class="opt-check"></span> Ja, aktiver Raucher</div></label>
+        <label class="opt-item"><input type="radio" name="rauchen" value="frueherer"><div class="opt-box"><span class="opt-check"></span> Aufgehört (ehemaliger Raucher)</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Nutzen Sie Bildschirme kurz vor dem Einschlafen?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="radio" name="bildschirmSchlaf" value="selten"><div class="opt-box"><span class="opt-check"></span> Selten oder nie</div></label>
+        <label class="opt-item"><input type="radio" name="bildschirmSchlaf" value="manchmal"><div class="opt-box"><span class="opt-check"></span> Manchmal</div></label>
+        <label class="opt-item"><input type="radio" name="bildschirmSchlaf" value="taeglich"><div class="opt-box"><span class="opt-check"></span> Fast täglich, bis kurz vor dem Schlafen</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Wie schätzen Sie Ihre Schlafqualität ein?</span>
+      <div class="options-grid">
+        <label class="opt-item"><input type="radio" name="schlaf" value="gut"><div class="opt-box"><span class="opt-check"></span> Gut — ich schlafe ausreichend und erholsam</div></label>
+        <label class="opt-item"><input type="radio" name="schlaf" value="maessig"><div class="opt-box"><span class="opt-check"></span> Mäßig — gelegentliche Schlafprobleme</div></label>
+        <label class="opt-item"><input type="radio" name="schlaf" value="schlecht"><div class="opt-box"><span class="opt-check"></span> Schlecht — ich schlafe wenig oder unruhig</div></label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <span class="q-label">Sonstige Fragen oder Wünsche an uns? (optional)</span>
+      <textarea class="q-text" id="anmerkungen" placeholder="Alles, was uns helfen kann, Ihren Termin noch besser vorzubereiten …"></textarea>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn btn-ghost" onclick="goToStep(6)">← Zurück</button>
+      <button class="btn btn-submit btn-primary" onclick="submitForm()">🔍 Meine Empfehlung erstellen</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       RECOMMENDATION OUTPUT
+  ══════════════════════════════════════════ -->
+  <div id="recommendation">
+
+    <div class="rec-header">
+      <div class="rec-tag">PERSÖNLICHE SYSTEMEMPFEHLUNG</div>
+      <h2 id="rec-greeting">Ihre individuelle Beratungsempfehlung</h2>
+      <p>Basierend auf Ihren Angaben haben wir die für Sie wichtigsten Untersuchungen und Maßnahmen zusammengestellt. Unser Team wird diesen Plan bei Ihrem Termin als Startpunkt verwenden.</p>
+      <div class="rec-stats">
+        <div class="rec-stat"><b id="stat-exams">0</b><span>empfohlene Untersuchungen</span></div>
+        <div class="rec-stat"><b id="stat-nems">0</b><span>Nahrungsergänzungen</span></div>
+      </div>
+    </div>
+
+    <!-- Examinations -->
+    <div class="rec-section-title">
+      <div class="rec-section-icon" style="background:#e8f0fb;">🔬</div>
+      <h3>Empfohlene optometrische Untersuchungen</h3>
+      <div class="rec-section-line"></div>
+    </div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:var(--red);"></span> Dringend empfohlen</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--orange);"></span> Empfohlen</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--primary);"></span> Sinnvoll</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--teal);"></span> Basis / für jeden</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--textMid);"></span> Ergänzend</span>
+    </div>
+    <div id="exam-list"></div>
+
+    <!-- NEM -->
+    <div class="rec-section-title">
+      <div class="rec-section-icon" style="background:#edf7f6;">🌿</div>
+      <h3>Empfohlene Nahrungsergänzung für Ihre Augengesundheit</h3>
+      <div class="rec-section-line"></div>
+    </div>
+    <div id="nem-list"></div>
+
+    <!-- Advisor summary -->
+    <div class="advisor-box">
+      <h4>📋 Zusammenfassung für Ihre Beraterin / Ihren Berater</h4>
+      <div class="advisor-contact" id="advisor-contact"></div>
+      <p>Folgende Eckdaten wurden aus Ihren Angaben erfasst:</p>
+      <div class="advisor-grid" id="advisor-summary"></div>
+    </div>
+
+    <div class="export-box">
+      <div class="export-title">📤 Daten exportieren</div>
+      <p class="export-hint">Kontaktdaten, Angaben und Empfehlungen als Datei für Ihr System speichern – wählen Sie ein Format:</p>
+      <div class="export-actions">
+        <button class="btn btn-export-xlsx" onclick="exportData('xlsx')">📊 Als Excel (.xlsx)</button>
+        <button class="btn btn-export-csv" onclick="exportData('csv')">📄 Als CSV (.csv)</button>
+      </div>
+    </div>
+
+    <div class="rec-actions">
+      <button class="btn btn-print" onclick="window.print()">🖨️ Empfehlung drucken / als PDF speichern</button>
+      <button class="btn btn-restart" onclick="restartForm()">↺ Fragebogen neu starten</button>
+    </div>
+
+    <div class="disclaimer">
+      <span class="rec-date" id="rec-date"></span>
+      Diese Empfehlung basiert auf Ihren eigenen Angaben und ersetzt keine medizinische Diagnose.<br>
+      Alle Ergebnisse werden durch Ihr hoffmann&amp;brillen-Beratungsteam im persönlichen Gespräch besprochen und individuell angepasst.
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // ══════════════════════════════════════════
+  // STATE
+  // ══════════════════════════════════════════
+  const state = { step: 1 };
+  const LAST_STEP = 7;
+
+  function collectAnswers() {
+    const get  = (n)  => { const el = document.querySelector('[name="'+n+'"]:checked'); return el ? el.value : ''; };
+    const getA = (n)  => Array.from(document.querySelectorAll('[name="'+n+'"]:checked')).map(e => e.value);
+    const txt  = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+    const chk  = (id) => { const el = document.getElementById(id); return el ? el.checked : false; };
+    return {
+      // Kontaktdaten
+      anrede:             get('anrede'),
+      titel:              txt('titel'),
+      vorname:            txt('vorname'),
+      nachname:           txt('nachname'),
+      strasse:            txt('strasse'),
+      hausnummer:         txt('hausnummer'),
+      plz:                txt('plz'),
+      wohnort:            txt('wohnort'),
+      festnetz:           txt('festnetz'),
+      mobil:              txt('mobil'),
+      email:              txt('email'),
+      keinMobil:          chk('keinMobil'),
+      keinEmail:          chk('keinEmail'),
+      consent:            chk('consent'),
+      // Anamnese
+      alter:              get('alter'),
+      sehhilfe:           get('sehhilfe'),
+      letzteUntersuchung: get('letzteUntersuchung'),
+      anlass:             txt('anlass'),
+      beschwerden:        getA('beschwerden'),
+      beschwerdenSonstige:txt('beschwerdenSonstige'),
+      bildschirmStunden:  get('bildschirmStunden'),
+      geraete:            getA('geraete'),
+      beruf:              get('beruf'),
+      sehanforderungen:   txt('sehanforderungen'),
+      autofahren:         get('autofahren'),
+      nachtfahrten:       get('nachtfahrten'),
+      sport:              getA('sport'),
+      draussen:           get('draussen'),
+      erkrankungen:       getA('erkrankungen'),
+      familienGeschichte: getA('familienGeschichte'),
+      medikamente:        get('medikamente'),
+      medikamenteText:    txt('medikamenteText'),
+      ernaehrung:         get('ernaehrung'),
+      fisch:              get('fisch'),
+      rauchen:            get('rauchen'),
+      bildschirmSchlaf:   get('bildschirmSchlaf'),
+      schlaf:             get('schlaf'),
+      anmerkungen:        txt('anmerkungen'),
+    };
+  }
+
+  // ══════════════════════════════════════════
+  // CONTACT — Alternative-Checkbox-Logik
+  // ══════════════════════════════════════════
+  function toggleAlt(checkboxId, inputId, errId) {
+    const cb  = document.getElementById(checkboxId);
+    const inp = document.getElementById(inputId);
+    if (!cb || !inp) return;
+    inp.disabled = cb.checked;
+    if (cb.checked) {
+      inp.value = '';
+      inp.classList.remove('invalid');
+      const err = document.getElementById(errId);
+      if (err) err.classList.remove('visible');
+    }
+    // visuelles Sternchen aktualisieren
+    const reqMap = { keinMobil: 'mobil-req', keinEmail: 'email-req' };
+    const reqEl = document.getElementById(reqMap[checkboxId]);
+    if (reqEl) reqEl.style.visibility = cb.checked ? 'hidden' : 'visible';
+  }
+
+  // ══════════════════════════════════════════
+  // NAVIGATION
+  // ══════════════════════════════════════════
+  function goToStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('recommendation').classList.remove('active');
+    const el = document.getElementById('step-' + n);
+    if (el) { el.classList.add('active'); state.step = n; updateProgress(n); }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress(n) {
+    document.getElementById('progress-current').textContent = n;
+    for (let i = 1; i <= LAST_STEP; i++) {
+      const d = document.getElementById('pd' + i);
+      if (d) d.className = 'pdot' + (i < n ? ' done' : i === n ? ' active' : '');
+    }
+  }
+
+  function nextStep(from) {
+    if (!validateStep(from)) return;
+    if (from < LAST_STEP) goToStep(from + 1);
+  }
+
+  // ══════════════════════════════════════════
+  // VALIDATION
+  // ══════════════════════════════════════════
+  function validateStep(n) {
+    let ok = true;
+    const show = (id, vis) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('visible', vis);
+    };
+    const mark = (id, bad) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('invalid', bad);
+    };
+
+    if (n === 1) {
+      // Kontaktdaten
+      const anredeMissing = !document.querySelector('[name="anrede"]:checked');
+      show('err-anrede', anredeMissing);
+
+      const checks = [
+        ['vorname',    'err-vorname'],
+        ['nachname',   'err-nachname'],
+        ['strasse',    'err-strasse'],
+        ['hausnummer', 'err-hausnummer'],
+        ['wohnort',    'err-wohnort'],
+      ];
+      let textOk = true;
+      checks.forEach(([id, err]) => {
+        const v = document.getElementById(id).value.trim();
+        const bad = v === '';
+        show(err, bad); mark(id, bad);
+        if (bad) textOk = false;
+      });
+
+      // PLZ
+      const plz = document.getElementById('plz').value.trim();
+      const plzBad = !/^\d{5}$/.test(plz);
+      show('err-plz', plzBad); mark('plz', plzBad);
+
+      // Mobil
+      const keinMobil = document.getElementById('keinMobil').checked;
+      const mobil = document.getElementById('mobil').value.trim();
+      const mobilBad = !keinMobil && mobil === '';
+      show('err-mobil', mobilBad); mark('mobil', mobilBad);
+
+      // Email
+      const keinEmail = document.getElementById('keinEmail').checked;
+      const email = document.getElementById('email').value.trim();
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailBad = !keinEmail && !emailRe.test(email);
+      show('err-email', emailBad); mark('email', emailBad);
+
+      // Mindestens ein Kontaktweg
+      const festnetz = document.getElementById('festnetz').value.trim();
+      const noChannel = festnetz === '' && (keinMobil || mobil === '') && (keinEmail || email === '');
+      show('err-kontaktweg', noChannel);
+
+      // DSGVO
+      const consent = document.getElementById('consent').checked;
+      show('err-consent', !consent);
+      mark('consent-box', !consent);
+
+      ok = !anredeMissing && textOk && !plzBad && !mobilBad && !emailBad && !noChannel && consent;
+    }
+    if (n === 2) {
+      const a = !document.querySelector('[name="alter"]:checked');
+      const s = !document.querySelector('[name="sehhilfe"]:checked');
+      const u = !document.querySelector('[name="letzteUntersuchung"]:checked');
+      show('err-alter', a); show('err-sehhilfe', s); show('err-untersuchung', u);
+      ok = !a && !s && !u;
+    }
+    if (n === 4) {
+      const b = !document.querySelector('[name="bildschirmStunden"]:checked');
+      show('err-bildschirm', b);
+      ok = !b;
+    }
+    return ok;
+  }
+
+  // ══════════════════════════════════════════
+  // HELPERS
+  // ══════════════════════════════════════════
+  function getAge(val) {
+    const m = { '<30': 25, '30-39': 35, '40-49': 45, '50-59': 55, '60+': 65 };
+    return m[val] || 30;
+  }
+  function getScreenH(val) {
+    const m = { '<2': 1, '2-4': 3, '4-6': 5, '>6': 7 };
+    return m[val] || 0;
+  }
+  function label(val, map) { return map[val] || val; }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  const ALTER_LABELS = { '<30':'Unter 30', '30-39':'30–39', '40-49':'40–49', '50-59':'50–59', '60+':'60+' };
+  const SEH_LABELS   = { 'keine':'Keine Sehhilfe', 'brille':'Brille', 'kontaktlinsen':'Kontaktlinsen', 'beide':'Brille & Kontaktlinsen' };
+
+  // Sortierung: Basis zuerst (Fundament), dann nach Dringlichkeit
+  const PRIO_RANK = { basis: 0, dringend: 1, hoch: 2, mittel: 3, ergaenzend: 4 };
+  function sortByPrio(arr) {
+    return arr
+      .map((item, i) => ({ item, i }))
+      .sort((a, b) => {
+        const ra = PRIO_RANK[a.item.badge] ?? 9;
+        const rb = PRIO_RANK[b.item.badge] ?? 9;
+        return ra !== rb ? ra - rb : a.i - b.i;
+      })
+      .map(x => x.item);
+  }
+
+  // ══════════════════════════════════════════
+  // RECOMMENDATION ENGINE
+  // ══════════════════════════════════════════
+  function generateRecommendations(a) {
+    const age    = getAge(a.alter);
+    const scr    = getScreenH(a.bildschirmStunden);
+    const hasB   = v => a.beschwerden.includes(v);
+    const hasE   = v => a.erkrankungen.includes(v);
+    const hasF   = v => a.familienGeschichte.includes(v);
+    const hasSp  = v => a.sport.includes(v);
+
+    const exams = [];
+    const nems  = [];
+
+    // ── EXAMINATIONS ──────────────────────────
+
+    // 1. Refraktion — immer
+    exams.push({
+      name: 'Vollständige Refraktionsbestimmung',
+      icon: '👁️',
+      badge: 'basis',
+      label: 'Basisuntersuchung',
+      desc: 'Die präzise Messung Ihrer Sehstärke ist die Grundlage jeder Beratung. Selbst wenn Sie bereits eine Sehhilfe tragen, können sich die Werte unmerklich verändert haben — mit spürbaren Auswirkungen auf Augenermüdung, Konzentration und Kopfschmerzen.'
+    });
+
+    // 2. Binokulare Sehanalyse
+    if (hasB('doppelbilder') || hasB('kopfschmerzen')) {
+      exams.push({
+        name: 'Binokulare Sehanalyse & Heterophorie-Messung',
+        icon: '⚡',
+        badge: 'dringend',
+        label: 'Dringend empfohlen',
+        desc: 'Doppelbilder und Kopfschmerzen beim Lesen sind klassische Zeichen einer latenten Schielstellung (Heterophorie). Das Gehirn gleicht diese ständig aus — mit großem Energieaufwand. Eine gezielte Prismenkorrektur kann hier innerhalb kurzer Zeit enorme Erleichterung bringen.'
+      });
+    }
+
+    // 3. Flimmern / OCT
+    if (hasB('flimmern')) {
+      exams.push({
+        name: 'Fundusuntersuchung & OCT-Netzhaut-Scan (dringend)',
+        icon: '🔴',
+        badge: 'dringend',
+        label: 'Dringend empfohlen',
+        desc: 'Flimmern, Blitze oder Rußflocken im Sehfeld können auf Veränderungen an Netzhaut oder Glaskörper hinweisen und sollten zeitnah abgeklärt werden. Eine kontaktlose OCT-Aufnahme liefert in wenigen Minuten ein hochauflösendes Bild Ihrer Netzhaut.'
+      });
+    }
+
+    // 4. Glaukom-Screening
+    if (age >= 40 || hasE('diabetes') || hasE('bluthochdruck') || hasF('glaukom')) {
+      const urgency = hasF('glaukom') ? 'dringend' : 'hoch';
+      const ulabel  = hasF('glaukom') ? 'Dringend empfohlen' : 'Empfohlen';
+      let why = age >= 40 ? 'Ab 40 Jahren steigt das Glaukomrisiko messbar an.' : '';
+      if (hasF('glaukom')) why = 'Bei familiärer Vorbelastung ist das individuelle Risiko bis zu 10-fach erhöht.';
+      else if (hasE('diabetes') || hasE('bluthochdruck')) why = 'Diabetes und Bluthochdruck beeinflussen Augendruck und Netzhautdurchblutung direkt.';
+      exams.push({
+        name: 'Augendruckmessung & Glaukom-Screening (Tonometrie)',
+        icon: '🔵',
+        badge: urgency,
+        label: ulabel,
+        desc: why + ' Der Grüne Star (Glaukom) verläuft jahrelang völlig schmerzlos — bis bleibende Gesichtsfeldausfälle entstehen. Eine berührungslose Messung in wenigen Sekunden schafft Klarheit und gibt Ihnen Sicherheit.'
+      });
+    }
+
+    // 5. Glaukom Erweiterungsdiagnostik
+    if (hasF('glaukom') && age >= 35) {
+      exams.push({
+        name: 'Erweiterte Nervenfaserschicht-Analyse (OCT-Glaukom)',
+        icon: '🔬',
+        badge: 'dringend',
+        label: 'Dringend empfohlen',
+        desc: 'Bei familiärer Glaukom-Vorbelastung empfehlen wir eine OCT-basierte Messung der retinalen Nervenfaserschicht. Diese erkennt strukturelle Schäden, bevor das Gesichtsfeld betroffen ist — Ihre wichtigste Früherkennung und ein messbarer Schutzwall gegen irreversiblen Sehverlust.'
+      });
+    }
+
+    // 6. Presbyopie
+    if (age >= 42) {
+      exams.push({
+        name: 'Presbyopie-Screening & Nahvisus-Analyse',
+        icon: '📖',
+        badge: 'hoch',
+        label: 'Empfohlen',
+        desc: 'Alterssichtigkeit beginnt typischerweise zwischen 40 und 50 Jahren — oft zunächst nur als leichte Ermüdung beim Lesen. Wir analysieren Ihre Nahsehleistung vollständig und erarbeiten gemeinsam die optimale Lösung: Gleitsichtbrille, Bildschirmbrille, Lesebrille oder moderne Kontaktlinsen-Systeme.'
+      });
+    }
+
+    // 7. OCT Makula
+    if ((age >= 50 || hasF('amd') || hasF('netzhaut')) && !hasB('flimmern')) {
+      exams.push({
+        name: 'OCT-Makuladiagnostik (Netzhaut-Querschnitt)',
+        icon: '🔭',
+        badge: hasF('amd') ? 'dringend' : 'hoch',
+        label: hasF('amd') ? 'Dringend empfohlen' : 'Empfohlen',
+        desc: 'Die optische Kohärenztomographie (OCT) erstellt kontaktlos, in Sekunden, hochauflösende Schichtbilder Ihrer Netzhaut. Früheste Anzeichen der Makuladegeneration (AMD) werden sichtbar, lange bevor Sie selbst Veränderungen bemerken würden — entscheidend für rechtzeitige Gegenmaßnahmen.'
+      });
+    }
+
+    // 8. Fundus / Fundusfoto
+    if (hasE('diabetes') || hasE('bluthochdruck') || (age >= 55 && hasF('amd'))) {
+      exams.push({
+        name: 'Digitale Fundusfotografie & Augenhintergrund-Dokumentation',
+        icon: '📷',
+        badge: hasE('diabetes') || hasE('bluthochdruck') ? 'dringend' : 'hoch',
+        label: hasE('diabetes') || hasE('bluthochdruck') ? 'Dringend empfohlen' : 'Empfohlen',
+        desc: 'Die feinen Netzhautgefäße sind ein einzigartiges Fenster in die Gefäßgesundheit Ihres gesamten Körpers. Eine hochauflösende Fotodokumentation ermöglicht den Jahresvergleich und erkennt diabetische oder hypertensive Netzhautveränderungen, bevor diese zu Sehverlust führen.'
+      });
+    }
+
+    // 9. Dämmerungssehtest
+    if (hasB('nacht') || hasB('blendung') || a.nachtfahrten === 'regelmaessig') {
+      exams.push({
+        name: 'Dämmerungssehtest & Blendungsanalyse',
+        icon: '🌙',
+        badge: 'mittel',
+        label: 'Sinnvoll',
+        desc: 'Schlechtes Sehen bei Dämmerung ist häufig auf eine unkorrigierte Fehlsichtigkeit oder beginnende Linsentrübung zurückzuführen — und besonders kritisch für Autofahrer. Unser Test misst Ihre Kontrastempfindlichkeit bei niedrigem Licht und liefert konkrete Handlungsempfehlungen für sicheres Fahren.'
+      });
+    }
+
+    // 10. Tränenfilm
+    if (hasB('trocken') || hasB('muede') || a.sehhilfe === 'kontaktlinsen' || a.sehhilfe === 'beide' || scr >= 4) {
+      exams.push({
+        name: 'Tränenfilmanalyse (BUT / Schirmer) & Trockenaugen-Check',
+        icon: '💧',
+        badge: hasB('trocken') ? 'hoch' : 'mittel',
+        label: hasB('trocken') ? 'Empfohlen' : 'Sinnvoll',
+        desc: 'Trockene Augen sind die häufigste Augenbeschwerden der Gegenwart — begünstigt durch Bildschirmarbeit, Klimaanlagen und zu seltenes Blinzeln. Wir messen Stabilität und Volumen Ihres Tränenfilms und entwickeln einen individuellen Behandlungsplan: von Benetzungsmitteln und Lidhygiene bis zur gezielten Nahrungsergänzung.'
+      });
+    }
+
+    // 11. Digital Eye Strain
+    if (scr >= 4) {
+      exams.push({
+        name: 'Digital-Eye-Strain-Assessment & Akkommodationsmessung',
+        icon: '💻',
+        badge: scr >= 6 ? 'hoch' : 'mittel',
+        label: scr >= 6 ? 'Empfohlen' : 'Sinnvoll',
+        desc: 'Bei ' + (scr >= 6 ? 'mehr als 6' : '4–6') + ' Stunden Bildschirmarbeit täglich ist das visuelle System erheblich beansprucht. Wir messen Ihre Akkommodationsbreite (Scharfstellvermögen zwischen verschiedenen Distanzen), Konvergenzreserven und bestimmen die für Sie optimale Bildschirmbrille oder Arbeitsplatz-Konfiguration.'
+      });
+    }
+
+    // ── NEM ──────────────────────────────────
+
+    // 1. Lutein + Zeaxanthin — immer
+    nems.push({
+      name: 'Lutein & Zeaxanthin',
+      icon: '🌿',
+      dosage: '10–20 mg täglich',
+      badge: 'basis',
+      label: 'Für jeden sinnvoll',
+      desc: 'Lutein und Zeaxanthin sind die einzigen Carotinoide, die sich direkt im Zentrum der Netzhaut anreichern und dort das Makulapigment bilden — eine natürliche Schutzschicht gegen schädliches Blaulicht und oxidativen Stress. Die meisten Menschen nehmen über die Nahrung nur 20–30 % der schützenden Menge auf. Eine tägliche Supplementierung ist eine der wichtigsten Maßnahmen für langfristige Sehgesundheit.'
+    });
+
+    // 2. Omega-3
+    if (hasB('trocken') || hasB('muede') || scr >= 4 || a.fisch === 'selten' || a.fisch === 'nie' || a.ernaehrung === 'vegan' || a.ernaehrung === 'vegetarisch') {
+      nems.push({
+        name: 'Omega-3-Fettsäuren (EPA + DHA)',
+        icon: '🐟',
+        dosage: '1.000–2.000 mg täglich',
+        badge: 'hoch',
+        label: 'Sehr empfohlen',
+        desc: 'Omega-3-Fettsäuren sind strukturelle Bausteine des Tränenfilms und der Photorezeptoren in der Netzhaut. Klinische Studien belegen eine signifikante Verbesserung bei trockenen Augen und entzündlichen Augenlidentzündungen. Bei seltenem Fischkonsum ist eine Supplementierung besonders wichtig — wählen Sie geprüfte Fischöl-Präparate oder veganes Algenöl (direkte DHA-Quelle).'
+      });
+    }
+
+    // 3. AREDS2
+    if (age >= 50 || hasF('amd')) {
+      nems.push({
+        name: 'AREDS2-Formel (Zink · Vitamin C & E · Kupfer)',
+        icon: '🛡️',
+        dosage: 'Gemäß Studiendosierung (täglich)',
+        badge: hasF('amd') ? 'dringend' : 'hoch',
+        label: hasF('amd') ? 'Dringend empfohlen' : 'Sehr empfohlen',
+        desc: 'Die AREDS2-Studie des US National Eye Institute (über 4.000 Teilnehmer, 5 Jahre Laufzeit) belegt eindeutig: Diese Nährstoffkombination reduziert das Risiko einer AMD-Progression um bis zu 25 %. Zink, Vitamin C, Vitamin E und Kupfer bilden zusammen einen antioxidativen Schutzschild für die Makula. Bei familiärer Vorbelastung oder ab 50 Jahren eine der wichtigsten präventiven Maßnahmen überhaupt.'
+      });
+    }
+
+    // 4. Vitamin D3 + K2
+    if (a.draussen === 'drinnen' || a.ernaehrung === 'vegan' || a.ernaehrung === 'vegetarisch' || a.ernaehrung === 'wenig_gemüse') {
+      nems.push({
+        name: 'Vitamin D3 + K2',
+        icon: '☀️',
+        dosage: '2.000–4.000 IE D3 täglich',
+        badge: 'mittel',
+        label: 'Empfohlen',
+        desc: 'Vitamin-D-Mangel betrifft schätzungsweise 50–70 % der deutschen Bevölkerung. Niedrige Spiegel stehen in Zusammenhang mit erhöhtem Augeninnendruck, Entzündungen der Augenoberfläche und beeinträchtigter Netzhautfunktion. Vitamin K2 sorgt für die optimale Verwertung und schützt vor Gefäßablagerungen. Besonders wichtig bei wenig Aufenthalt im Freien.'
+      });
+    }
+
+    // 5. Antioxidantien Raucher
+    if (a.rauchen === 'ja') {
+      nems.push({
+        name: 'Antioxidantien-Komplex (Beta-Carotin-frei) ⚠️',
+        icon: '🔶',
+        dosage: 'Täglich nach Mahlzeit',
+        badge: 'dringend',
+        label: 'Dringend empfohlen',
+        desc: 'Rauchen verdoppelt statistisch das AMD-Risiko und erhöht den oxidativen Stress im Auge erheblich. Ein gezielter Antioxidantien-Komplex kann gegensteuern. Wichtiger Hinweis: Für aktive Raucher ist eine Beta-Carotin-freie Formel zwingend erforderlich — Beta-Carotin kann bei Rauchern das Lungenkrebsrisiko erhöhen (CARET-Studie, N=18.000). Wir beraten Sie gerne zu sicheren Alternativen.'
+      });
+    } else if (a.rauchen === 'frueherer') {
+      nems.push({
+        name: 'Antioxidantien-Komplex (reduziertes Beta-Carotin)',
+        icon: '🟠',
+        dosage: 'Täglich nach Mahlzeit',
+        badge: 'mittel',
+        label: 'Empfohlen',
+        desc: 'Als ehemaliger Raucher ist Ihr oxidativer Belastungslevel langfristig erhöht. Ein Antioxidantien-Komplex unterstützt die Regeneration der Netzhaut und der Augenoberfläche. Auch bei ehemaligen Rauchern empfehlen wir eine Beta-Carotin-reduzierte Formel als Vorsichtsmaßnahme.'
+      });
+    }
+
+    // 6. Blaulicht / Schlaf
+    if (a.bildschirmSchlaf === 'taeglich' && (a.schlaf === 'maessig' || a.schlaf === 'schlecht')) {
+      nems.push({
+        name: 'Blaulichtfilter-Gläser (Abendgebrauch) + L-Tryptophan',
+        icon: '🌙',
+        dosage: 'Abends 500 mg L-Tryptophan',
+        badge: 'mittel',
+        label: 'Empfohlen',
+        desc: 'Blaues Licht von Bildschirmen hemmt die körpereigene Melatoninproduktion und verzögert den Schlafbeginn. Das beeinträchtigt die nächtliche Zellregeneration der Netzhaut und des gesamten visuellen Systems. Blaulichtfilternde Abendgläser kombiniert mit L-Tryptophan (natürliche Melatonin-Vorstufe) können Schlafqualität und Augenregeneration deutlich verbessern.'
+      });
+    }
+
+    // 7. Astaxanthin
+    if (scr >= 6 || (a.sport.length > 0 && !a.sport.includes('kein') && (hasSp('ausdauer') || hasSp('rad') || hasSp('golf')))) {
+      nems.push({
+        name: 'Astaxanthin',
+        icon: '🦐',
+        dosage: '6–12 mg täglich',
+        badge: 'ergaenzend',
+        label: 'Ergänzend sinnvoll',
+        desc: 'Astaxanthin ist eines der potentesten natürlichen Antioxidantien und kann als eines der wenigen die Blut-Retina-Schranke überwinden. Es verbessert die Mikrodurchblutung der Augen, reduziert Sehermüdung bei intensiver Bildschirmarbeit und Ausdauersport nachweislich und unterstützt die Akkommodationsfähigkeit. Ideal für aktive Menschen mit hoher Bildschirmbelastung.'
+      });
+    }
+
+    return { exams: sortByPrio(exams), nems: sortByPrio(nems) };
+  }
+
+  // ══════════════════════════════════════════
+  // RENDER
+  // ══════════════════════════════════════════
+  function badgeClass(b) {
+    const m = { dringend:'badge-dringend', hoch:'badge-hoch', mittel:'badge-mittel', basis:'badge-basis', ergaenzend:'badge-ergaenzend' };
+    return m[b] || 'badge-mittel';
+  }
+
+  function renderCard(item, isNem) {
+    const dosage = isNem && item.dosage ? '<div class="rec-dosage">💊 ' + item.dosage + '</div>' : '';
+    return '<div class="rec-card">'
+      + '<div class="rec-icon">' + item.icon + '</div>'
+      + '<div class="rec-body">'
+      + '<div class="rec-name">' + item.name
+      + ' <span class="rec-badge ' + badgeClass(item.badge) + '">' + item.label + '</span>'
+      + '</div>'
+      + dosage
+      + '<div class="rec-desc">' + item.desc + '</div>'
+      + '</div></div>';
+  }
+
+  function submitForm() {
+    if (!validateStep(LAST_STEP)) return;
+    const a = collectAnswers();
+    const { exams, nems } = generateRecommendations(a);
+
+    // Für Export merken
+    state.export = { a, exams, nems };
+
+    // Personalisierte Begrüßung
+    const anr = a.anrede === 'herr' ? 'Herr' : a.anrede === 'frau' ? 'Frau' : '';
+    const nameParts = [anr, a.titel, a.nachname].filter(Boolean).join(' ');
+    document.getElementById('rec-greeting').textContent = nameParts
+      ? 'Guten Tag' + (anr ? ', ' + nameParts : ' ' + nameParts) + '!'
+      : 'Ihre individuelle Beratungsempfehlung';
+
+    // Statistik
+    document.getElementById('stat-exams').textContent = exams.length;
+    document.getElementById('stat-nems').textContent  = nems.length;
+
+    // Exams
+    document.getElementById('exam-list').innerHTML = exams.map(e => renderCard(e, false)).join('');
+
+    // NEM
+    document.getElementById('nem-list').innerHTML = nems.map(n => renderCard(n, true)).join('');
+
+    // Kontaktdaten-Block für Berater
+    const fullName = [anr, a.titel, a.vorname, a.nachname].filter(Boolean).join(' ');
+    const adresse  = esc(a.strasse) + ' ' + esc(a.hausnummer) + ', ' + esc(a.plz) + ' ' + esc(a.wohnort);
+    const kontakt  = [];
+    if (a.festnetz)              kontakt.push('Festnetz: ' + esc(a.festnetz));
+    if (!a.keinMobil && a.mobil) kontakt.push('Mobil: ' + esc(a.mobil));
+    if (a.keinMobil)             kontakt.push('Mobil: keine Angabe');
+    if (!a.keinEmail && a.email) kontakt.push('E-Mail: ' + esc(a.email));
+    if (a.keinEmail)             kontakt.push('E-Mail: keine Angabe');
+    document.getElementById('advisor-contact').innerHTML =
+      '<strong>' + (esc(fullName) || '—') + '</strong><br>' +
+      adresse + '<br>' +
+      kontakt.join(' · ');
+
+    // Advisor summary
+    const items = [
+      ['Alter', ALTER_LABELS[a.alter] || '–'],
+      ['Sehhilfe', SEH_LABELS[a.sehhilfe] || '–'],
+      ['Letzte Untersuchung', {'nie':'Noch nie / sehr lange','<1':'< 1 Jahr','1-2':'1–2 Jahre','>2':'> 2 Jahre'}[a.letzteUntersuchung] || '–'],
+      ['Bildschirm/Tag', {'<2':'< 2 Std.','2-4':'2–4 Std.','4-6':'4–6 Std.','>6':'> 6 Std.'}[a.bildschirmStunden] || '–'],
+      ['Rauchen', {'nein':'Nein','ja':'Ja (aktiv)','frueherer':'Ehemaliger Raucher'}[a.rauchen] || '–'],
+      ['Erkrankungen', a.erkrankungen.filter(x=>x!=='keine').join(', ') || 'Keine bekannt'],
+      ['Familie (Augen)', a.familienGeschichte.filter(x=>x!=='keine').join(', ') || 'Keine bekannt'],
+      ['Beschwerden', a.beschwerden.filter(x=>x!=='keine').slice(0,3).join(', ') + (a.beschwerden.filter(x=>x!=='keine').length > 3 ? ' …' : '') || 'Keine'],
+    ];
+    document.getElementById('advisor-summary').innerHTML = items.map(([k,v]) =>
+      '<div class="advisor-item"><strong>' + k + ':</strong> ' + esc(v) + '</div>'
+    ).join('');
+
+    // Druckdatum
+    document.getElementById('rec-date').textContent =
+      'Erstellt am ' + new Date().toLocaleDateString('de-DE', { day:'2-digit', month:'long', year:'numeric' });
+
+    // Show recommendation
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('progress-wrap').style.display = 'none';
+    document.getElementById('recommendation').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function restartForm() {
+    document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => el.checked = false);
+    document.querySelectorAll('textarea').forEach(el => el.value = '');
+    document.querySelectorAll('input[type="text"], input[type="tel"], input[type="email"]').forEach(el => { el.value = ''; el.disabled = false; el.classList.remove('invalid'); });
+    document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+    document.querySelectorAll('.field-err').forEach(el => el.classList.remove('visible'));
+    document.getElementById('consent-box').classList.remove('invalid');
+    document.getElementById('mobil-req').style.visibility = 'visible';
+    document.getElementById('email-req').style.visibility = 'visible';
+    document.getElementById('progress-wrap').style.display = '';
+    document.getElementById('recommendation').classList.remove('active');
+    goToStep(1);
+  }
+
+  // ══════════════════════════════════════════
+  // EXPORT (Excel / CSV)
+  // ══════════════════════════════════════════
+  const EXPORT_LABELS = {
+    anrede:   { herr:'Herr', frau:'Frau' },
+    letzteUntersuchung: { nie:'Noch nie / sehr lange', '<1':'< 1 Jahr', '1-2':'1–2 Jahre', '>2':'> 2 Jahre' },
+    bildschirmStunden:  { '<2':'Unter 2 Std', '2-4':'2–4 Std', '4-6':'4–6 Std', '>6':'Mehr als 6 Std' },
+    beruf:    { buero:'Büro / Verwaltung', handwerk:'Handwerk / Technik', fahrdienst:'Fahrdienst / Außendienst', kreativ:'Kreativ / Design', sozial:'Sozial / Pflege / Medizin', rente:'Rentner/in', sonstiges:'Sonstiges' },
+    autofahren:   { taeglich:'Täglich', gelegentlich:'Gelegentlich', selten:'Selten / Kaum', nie:'Gar nicht' },
+    nachtfahrten: { regelmaessig:'Regelmäßig', selten:'Gelegentlich', nie:'Nie / Kein Auto' },
+    draussen:     { viel:'Täglich viel', gelegentlich:'Gelegentlich', drinnen:'Überwiegend drinnen' },
+    medikamente:  { nein:'Nein', ja:'Ja' },
+    ernaehrung:   { ausgewogen:'Ausgewogen', gemischt:'Gemischt', 'wenig_gemüse':'Wenig Obst/Gemüse', vegetarisch:'Vegetarisch', vegan:'Vegan' },
+    fisch:        { regelmaessig:'Mehrmals/Woche', woechentlich:'~1×/Woche', selten:'Selten', nie:'Nie' },
+    rauchen:      { nein:'Nie geraucht', ja:'Aktiver Raucher', frueherer:'Ehemaliger Raucher' },
+    bildschirmSchlaf: { selten:'Selten / nie', manchmal:'Manchmal', taeglich:'Fast täglich' },
+    schlaf:       { gut:'Gut', maessig:'Mäßig', schlecht:'Schlecht' },
+    beschwerden:  { ferne:'Ferne verschwommen', naehe:'Nähe verschwommen', kopfschmerzen:'Kopfschmerzen', muede:'Müde Augen', doppelbilder:'Doppelbilder', blendung:'Blendempfindlichkeit', nacht:'Schlecht bei Nacht', flimmern:'Flimmern / Blitze', trocken:'Trockene Augen', rot:'Gerötete Augen', keine:'Keine' },
+    geraete:      { pc:'PC / Laptop', tablet:'Tablet', smartphone:'Smartphone', tv:'Fernseher' },
+    sport:        { ball:'Ball- / Mannschaftssport', rad:'Radfahren', golf:'Golf / Schießsport', wasser:'Schwimmen / Wassersport', ausdauer:'Laufen / Ausdauer', kampf:'Kampfsport / Klettern', kein:'Keiner' },
+    erkrankungen: { diabetes:'Diabetes', bluthochdruck:'Bluthochdruck', 'schilddrüse':'Schilddrüse', rheuma:'Rheuma / Autoimmun', keine:'Keine' },
+    familienGeschichte: { glaukom:'Glaukom', katarakt:'Katarakt', amd:'AMD', netzhaut:'Netzhauterkrankung', keine:'Keine / Weiß nicht' },
+  };
+  function lbl(field, val) {
+    if (!val) return '';
+    const m = EXPORT_LABELS[field];
+    return (m && m[val]) ? m[val] : val;
+  }
+  function lblArr(field, arr) {
+    if (!arr || !arr.length) return '';
+    return arr.map(v => lbl(field, v)).join(', ');
+  }
+
+  function buildExport() {
+    const e = state.export;
+    if (!e) return null;
+    const a = e.a;
+    const anr = lbl('anrede', a.anrede);
+
+    const profil = [
+      ['Anrede', anr],
+      ['Titel', a.titel],
+      ['Vorname(n)', a.vorname],
+      ['Nachname', a.nachname],
+      ['Straße', a.strasse],
+      ['Hausnummer', a.hausnummer],
+      ['Postleitzahl', a.plz],
+      ['Wohnort', a.wohnort],
+      ['Festnetz', a.festnetz],
+      ['Mobilfunk', a.keinMobil ? 'keine Angabe' : a.mobil],
+      ['E-Mail', a.keinEmail ? 'keine Angabe' : a.email],
+      ['DSGVO-Einwilligung', a.consent ? 'Ja' : 'Nein'],
+    ];
+
+    const anamnese = [
+      ['Altersgruppe', ALTER_LABELS[a.alter] || ''],
+      ['Sehhilfe', SEH_LABELS[a.sehhilfe] || ''],
+      ['Letzte Augenuntersuchung', lbl('letzteUntersuchung', a.letzteUntersuchung)],
+      ['Anlass des Besuchs', a.anlass],
+      ['Beschwerden', lblArr('beschwerden', a.beschwerden)],
+      ['Beschwerden – Sonstiges', a.beschwerdenSonstige],
+      ['Bildschirmzeit/Tag', lbl('bildschirmStunden', a.bildschirmStunden)],
+      ['Genutzte Geräte', lblArr('geraete', a.geraete)],
+      ['Beruf', lbl('beruf', a.beruf)],
+      ['Besondere Sehanforderungen', a.sehanforderungen],
+      ['Autofahren', lbl('autofahren', a.autofahren)],
+      ['Nacht-/Dämmerungsfahrten', lbl('nachtfahrten', a.nachtfahrten)],
+      ['Sport', lblArr('sport', a.sport)],
+      ['Aufenthalt im Freien', lbl('draussen', a.draussen)],
+      ['Bekannte Erkrankungen', lblArr('erkrankungen', a.erkrankungen)],
+      ['Familiäre Augenerkrankungen', lblArr('familienGeschichte', a.familienGeschichte)],
+      ['Regelm. Medikamente', lbl('medikamente', a.medikamente)],
+      ['Anmerkung Gesundheit', a.medikamenteText],
+      ['Ernährung', lbl('ernaehrung', a.ernaehrung)],
+      ['Seefisch-Konsum', lbl('fisch', a.fisch)],
+      ['Rauchen', lbl('rauchen', a.rauchen)],
+      ['Bildschirm vor dem Schlafen', lbl('bildschirmSchlaf', a.bildschirmSchlaf)],
+      ['Schlafqualität', lbl('schlaf', a.schlaf)],
+      ['Sonstige Wünsche', a.anmerkungen],
+    ];
+
+    const exams = e.exams.map(x => [x.name, x.label, x.desc]);
+    const nems  = e.nems.map(x => [x.name, x.label, x.dosage || '', x.desc]);
+
+    const datum = new Date().toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric' });
+    const fnameBase = 'Sehprofil_' + (a.nachname || 'Kunde').replace(/[^A-Za-z0-9ÄÖÜäöüß]/g, '') + '_' +
+      new Date().toISOString().slice(0,10);
+
+    return { profil, anamnese, exams, nems, datum, fnameBase, anr, a };
+  }
+
+  function triggerDownload(filename, blob) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = filename;
+    document.body.appendChild(link); link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  function csvCell(v) {
+    v = (v == null) ? '' : String(v);
+    if (/[";\n]/.test(v)) v = '"' + v.replace(/"/g, '""') + '"';
+    return v;
+  }
+  function exportCSV(d) {
+    const rows = [];
+    const add = (arr) => rows.push(arr.map(csvCell).join(';'));
+    add(['Sehprofil – Export']);
+    add(['Erstellt am', d.datum]);
+    add([]);
+    add(['KONTAKTDATEN']);
+    d.profil.forEach(r => add(r));
+    add([]);
+    add(['ANGABEN / ANAMNESE']);
+    d.anamnese.forEach(r => add(r));
+    add([]);
+    add(['EMPFOHLENE UNTERSUCHUNGEN']);
+    add(['Untersuchung', 'Dringlichkeit', 'Begründung']);
+    d.exams.forEach(r => add(r));
+    add([]);
+    add(['EMPFOHLENE NAHRUNGSERGÄNZUNG']);
+    add(['Präparat', 'Dringlichkeit', 'Dosierung', 'Begründung']);
+    d.nems.forEach(r => add(r));
+    const blob = new Blob(['﻿' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+    triggerDownload(d.fnameBase + '.csv', blob);
+  }
+
+  function exportXLSX(d) {
+    const wb = XLSX.utils.book_new();
+    const profilAoa = [['Sehprofil – Export'], ['Erstellt am', d.datum], [],
+      ['KONTAKTDATEN', ''], ...d.profil, [], ['ANGABEN / ANAMNESE', ''], ...d.anamnese];
+    const ws1 = XLSX.utils.aoa_to_sheet(profilAoa);
+    ws1['!cols'] = [{ wch: 28 }, { wch: 55 }];
+    XLSX.utils.book_append_sheet(wb, ws1, 'Kontakt & Profil');
+    const examAoa = [['Untersuchung', 'Dringlichkeit', 'Begründung'], ...d.exams];
+    const ws2 = XLSX.utils.aoa_to_sheet(examAoa);
+    ws2['!cols'] = [{ wch: 42 }, { wch: 16 }, { wch: 80 }];
+    XLSX.utils.book_append_sheet(wb, ws2, 'Untersuchungen');
+    const nemAoa = [['Präparat', 'Dringlichkeit', 'Dosierung', 'Begründung'], ...d.nems];
+    const ws3 = XLSX.utils.aoa_to_sheet(nemAoa);
+    ws3['!cols'] = [{ wch: 38 }, { wch: 16 }, { wch: 24 }, { wch: 80 }];
+    XLSX.utils.book_append_sheet(wb, ws3, 'Nahrungsergänzung');
+    XLSX.writeFile(wb, d.fnameBase + '.xlsx');
+  }
+
+  function exportXLSFallback(d) {
+    const esc2 = s => esc(s == null ? '' : String(s));
+    const kv = (title, arr) =>
+      '<tr><td colspan="2" style="background:#0A3254;color:#fff;font-weight:bold;">' + esc2(title) + '</td></tr>' +
+      arr.map(([k, v]) => '<tr><td style="font-weight:bold;">' + esc2(k) + '</td><td>' + esc2(v) + '</td></tr>').join('');
+    const tbl = (title, head, rows) =>
+      '<tr><td colspan="' + head.length + '" style="background:#0A3254;color:#fff;font-weight:bold;">' + esc2(title) + '</td></tr>' +
+      '<tr>' + head.map(h => '<th style="background:#0A9E97;color:#fff;">' + esc2(h) + '</th>').join('') + '</tr>' +
+      rows.map(r => '<tr>' + r.map(c => '<td>' + esc2(c) + '</td>').join('') + '</tr>').join('');
+    const html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">' +
+      '<head><meta charset="UTF-8"></head><body><table border="1">' +
+      '<tr><td colspan="4" style="font-size:14pt;font-weight:bold;">Sehprofil – Export (' + esc2(d.datum) + ')</td></tr>' +
+      kv('Kontaktdaten', d.profil) +
+      kv('Angaben / Anamnese', d.anamnese) +
+      tbl('Empfohlene Untersuchungen', ['Untersuchung', 'Dringlichkeit', 'Begründung'], d.exams) +
+      tbl('Empfohlene Nahrungsergänzung', ['Präparat', 'Dringlichkeit', 'Dosierung', 'Begründung'], d.nems) +
+      '</table></body></html>';
+    const blob = new Blob(['﻿' + html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    triggerDownload(d.fnameBase + '.xls', blob);
+  }
+
+  function exportData(format) {
+    const d = buildExport();
+    if (!d) { alert('Es liegen noch keine Daten zum Export vor.'); return; }
+    if (format === 'csv') {
+      exportCSV(d);
+    } else {
+      if (typeof XLSX !== 'undefined' && XLSX.utils) {
+        exportXLSX(d);
+      } else {
+        exportXLSFallback(d);
+      }
+    }
+  }
+
+  // ── INIT
+  goToStep(1);
+</script>
+</body>
+</html>
