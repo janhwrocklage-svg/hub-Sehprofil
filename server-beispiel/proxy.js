@@ -25,6 +25,7 @@
 const express = require('express');
 const cors = require('cors');
 const Anthropic = require('@anthropic-ai/sdk');
+const prisma = require('./prisma');
 
 const app = express();
 app.use(cors());                       // ggf. auf Ihre Domain einschränken
@@ -82,16 +83,26 @@ app.post('/api/auswerten', async (req, res) => {
   }
 });
 
-/* ---- PRISMA-Übergabe (Platzhalter – an Ihre PRISMA-Schnittstelle anpassen) ---- */
+/* ---- PRISMA-Übergabe (REST) ---- */
 app.post('/api/prisma/kunde', async (req, res) => {
-  const datensatz = req.body;
-  // TODO: Hier den realen PRISMA-Connector aufrufen (REST/SOAP/DB).
-  //  - Bestandskunde: Abgleich über kundennummer ODER nachname+geburtsdatum
-  //  - Neukunde:       anlegen, Kundennummer zurückgeben
-  //  - Zusammenfassung als Notiz/Historieneintrag mit Zeitstempel anhängen
-  console.log('PRISMA-Übergabe:', JSON.stringify(datensatz.kunde));
-  const kundennummer = datensatz?.kunde?.kundennummer || ('N-' + Date.now().toString().slice(-6));
-  res.json({ status: 'ok', kundennummer });
+  const payload = req.body || {};
+  if (!payload.kunde) return res.status(400).json({ error: 'Kein Kundendatensatz übergeben.' });
+
+  // Ist die REST-API noch nicht konfiguriert? -> sicheres Verhalten: nicht raten,
+  // sondern Mock-Antwort, damit das Frontend testbar bleibt.
+  if (!process.env.PRISMA_BASE_URL) {
+    console.log('[PRISMA nicht konfiguriert] Übergabe (Mock):', JSON.stringify(payload.kunde));
+    const kundennummer = payload.kunde.kundennummer || ('N-' + Date.now().toString().slice(-6));
+    return res.json({ status: 'mock', kundennummer, neuAngelegt: !payload.kunde.kundennummer });
+  }
+
+  try {
+    const result = await prisma.uebergebeBeratung(payload);
+    res.json(result);
+  } catch (err) {
+    console.error('PRISMA-Übergabe fehlgeschlagen:', err.message);
+    res.status(502).json({ error: 'PRISMA-Übergabe fehlgeschlagen.' });
+  }
 });
 
 app.listen(process.env.PORT || 3000,

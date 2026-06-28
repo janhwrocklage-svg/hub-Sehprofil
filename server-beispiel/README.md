@@ -13,10 +13,33 @@ Umgebungsvariable und ruft die KI auf.
 
 ```bash
 cd server-beispiel
-npm install express cors @anthropic-ai/sdk
-export ANTHROPIC_API_KEY=sk-ant-...      # Ihr Schlüssel
-node proxy.js                            # lauscht auf Port 3000
+npm install express cors @anthropic-ai/sdk     # Node 18+ (globales fetch)
+export ANTHROPIC_API_KEY=sk-ant-...            # KI-Schlüssel
+export PRISMA_BASE_URL=https://prisma.ihre-domain.de/api/v1   # optional
+export PRISMA_API_KEY=...                       # optional (PRISMA-Token)
+node proxy.js                                   # lauscht auf Port 3000
 ```
+
+## PRISMA-REST-Anbindung (`prisma.js`)
+
+Der Connector ist vorbereitet; sobald die PRISMA-API-Doku vorliegt, nur die mit
+`>> ANPASSEN <<` markierten Stellen füllen (Pfade, Auth-Schema, Feldnamen):
+
+| Schritt | Funktion | erwarteter REST-Aufruf (anpassbar) |
+|--------|----------|------------------------------------|
+| Bestandskunde suchen | `findeKunde` | `GET /kunden/{nr}` bzw. `GET /kunden?nachname=…&geburtsdatum=…` |
+| Neukunde anlegen | `legeKundeAn` | `POST /kunden` |
+| Historieneintrag | `ergaenzeHistorie` | `POST /kunden/{id}/historie` |
+
+Logik: Bestandskunde wird über **Kunden-Nr.** (sonst **Name + Geburtsdatum**)
+abgeglichen; bei Mehrdeutigkeit erfolgt **keine** automatische Zuordnung.
+Nicht gefunden / Neukunde → anlegen. Anschließend wird die Zusammenfassung als
+**Historieneintrag mit Zeitstempel** angehängt. Ohne gesetzte `PRISMA_BASE_URL`
+antwortet der Endpunkt mit `status:"mock"`, damit das Frontend testbar bleibt.
+
+Benötigt von PRISMA für den finalen Feinschliff: Basis-URL, Auth-Schema
+(Bearer/API-Key/Basic), Endpunkt-Pfade, Kunden-Feldnamen sowie das Format des
+Historien-/Notiz-Endpunkts.
 
 Dann im Tool (⚙️ Einstellungen):
 
