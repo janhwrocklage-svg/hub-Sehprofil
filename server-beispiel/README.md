@@ -57,6 +57,8 @@ Claude transkribiert **kein** Audio. Für die Sprache-zu-Text-Wandlung:
 
 - Gesundheitsnahe Daten → **Art. 9 DSGVO**: ausdrückliche Einwilligung
   (im Frontend als Pflicht-Gate umgesetzt).
+- Backend in EU-Cloud; zusätzlich ist im Proxy `inference_geo: 'eu'` gesetzt,
+  damit auch die **KI-Inferenz in der EU-Region** läuft (Daten-Residency).
 - **AVV** mit allen Auftragsverarbeitern, **Zero-Data-Retention** beim KI-Anbieter.
 - Audio nach Transkription verwerfen; Transkript nur so lange wie nötig speichern.
 - Verschlüsselung in Transit (TLS) und at Rest; Zugriffs-/Rollenkonzept.

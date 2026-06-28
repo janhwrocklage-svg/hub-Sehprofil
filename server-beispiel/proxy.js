@@ -61,6 +61,7 @@ app.post('/api/auswerten', async (req, res) => {
     const msg = await client.messages.create({
       model: MODEL,
       max_tokens: 4000,
+      inference_geo: 'eu',   // KI-Inferenz in der EU-Region (Daten-Residency, DSGVO)
       thinking: { type: 'adaptive' },
       output_config: { effort: 'high', format: { type: 'json_schema', schema: SCHEMA } },
       system,
