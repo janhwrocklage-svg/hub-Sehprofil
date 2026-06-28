@@ -2,8 +2,16 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Beratungs-Assistent – hoffmann&brillen</title>
+<!-- iPad / iPhone: als Web-App zum Home-Bildschirm hinzufügbar (Vollbild) -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Beratung">
+<meta name="theme-color" content="#07223A">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230A3254'/%3E%3Ctext x='90' y='124' font-size='96' text-anchor='middle' fill='%235CD9C8'%3E%E2%97%90%3C/text%3E%3C/svg%3E">
 <style>
   :root{
     --dark:#07223A; --navy:#0A3254; --primary:#0B5EA8; --teal:#0A9E97;
@@ -18,14 +26,15 @@
   body{
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--bg); color:var(--text); min-height:100vh; line-height:1.5;
-    -webkit-font-smoothing:antialiased;
+    -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%;
   }
-  .wrap{max-width:880px; margin:0 auto; padding:0 18px 80px}
+  button,a{-webkit-tap-highlight-color:transparent; touch-action:manipulation}
+  .wrap{max-width:880px; margin:0 auto; padding:0 calc(18px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left))}
 
   /* HEADER */
   header{position:sticky; top:0; z-index:30; backdrop-filter:saturate(180%) blur(20px);
     background:rgba(245,248,252,.82); border-bottom:1px solid var(--divider);}
-  .hdr-inner{max-width:880px; margin:0 auto; padding:14px 18px; display:flex; align-items:center; gap:14px}
+  .hdr-inner{max-width:880px; margin:0 auto; padding:calc(14px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) 14px calc(18px + env(safe-area-inset-left)); display:flex; align-items:center; gap:14px}
   .logo{width:42px;height:42px;flex:none;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--teal));
     display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;box-shadow:var(--shadow)}
   .hdr-txt h1{font-size:1.05rem;font-weight:650;letter-spacing:-.2px}
@@ -59,7 +68,7 @@
   @media(max-width:560px){.grid{grid-template-columns:1fr}}
   .fld label{display:block;font-size:.8rem;font-weight:600;color:var(--navy);margin-bottom:6px}
   .fld input,.fld select,.fld textarea{width:100%;border:1.5px solid var(--divider);border-radius:12px;
-    padding:12px 14px;font-size:.95rem;font-family:inherit;color:var(--text);background:var(--white);transition:.15s}
+    padding:12px 14px;font-size:16px;font-family:inherit;color:var(--text);background:var(--white);transition:.15s}
   .fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--primary);
     box-shadow:0 0 0 4px rgba(11,94,168,.10)}
   .fld textarea{resize:vertical;min-height:90px;line-height:1.55}
@@ -169,6 +178,7 @@
     </div>
     <div class="hdr-right">
       <span class="pill" id="modePill">Demo-Modus</span>
+      <button class="icon-btn" title="Lokales Archiv" onclick="openArchive()">📁</button>
       <button class="icon-btn" title="Fachbegriffe" onclick="openGloss()">📖</button>
       <button class="icon-btn" title="Einstellungen" onclick="openSettings()">⚙️</button>
     </div>
@@ -261,7 +271,7 @@
         <button class="btn btn-ghost" id="clearBtn" onclick="clearTranscript()">Zurücksetzen</button>
         <button class="btn btn-primary spacer" id="analyzeBtn" disabled onclick="analyze()">KI-Auswertung →</button>
       </div>
-      <div class="note" id="speechNote" style="display:none">⚠️ Die Live-Spracherkennung dieses Browsers ist nicht verfügbar. Sie können den Gesprächsverlauf alternativ in das Transkriptfeld eintippen/einfügen und dann auswerten. Für den Produktivbetrieb wird eine serverseitige Transkription (Whisper-Klasse, dialektoptimiert) empfohlen.</div>
+      <div class="note" id="speechNote">💡 <b>Auf dem iPad:</b> Falls die automatische Live-Erkennung nicht startet, tippen Sie einfach in das Transkriptfeld und nutzen Sie die <b>Mikrofon-Taste der iPad-Tastatur</b> zum Diktieren – oder fügen Sie Text ein. Danach „KI-Auswertung". (Für den späteren Produktivbetrieb ist eine serverseitige Transkription vorgesehen.)</div>
     </div>
   </section>
 
@@ -287,6 +297,7 @@
 
       <div class="row">
         <button class="btn btn-ghost" onclick="go('rec')">← Zurück</button>
+        <button class="btn btn-ghost" onclick="saveLocal()">💾 Lokal speichern</button>
         <button class="btn btn-ghost" onclick="exportData('csv')">⬇︎ CSV</button>
         <button class="btn btn-ghost" onclick="exportData('xlsx')">⬇︎ Excel</button>
         <button class="btn btn-primary spacer" onclick="pushPrisma()">An PRISMA übertragen →</button>
@@ -330,6 +341,19 @@
     <p class="sub"><b id="glossCount">0</b> hinterlegte Begriffe – sie werden zur Korrektur der Spracherkennung und zur korrekten Verwendung in der Zusammenfassung genutzt.</p>
     <div class="gloss-list" id="glossList"></div>
     <div class="row"><button class="btn btn-primary spacer" onclick="closeModal('mdGloss')">Schließen</button></div>
+  </div>
+</div>
+
+<!-- ARCHIVE MODAL -->
+<div class="modal" id="mdArchive">
+  <div class="box">
+    <h2>Lokales Archiv</h2>
+    <p class="sub">Auf diesem iPad gespeicherte Beratungen (<b id="arcCount">0</b>) – bleiben im Browser dieses Geräts, keine Cloud-Übertragung.</p>
+    <div id="arcList"></div>
+    <div class="row">
+      <button class="btn btn-ghost" onclick="clearArchiveAll()">Alle löschen</button>
+      <button class="btn btn-primary spacer" onclick="closeModal('mdArchive')">Schließen</button>
+    </div>
   </div>
 </div>
 
@@ -415,12 +439,16 @@ const $ = id => document.getElementById(id);
   // Glossary
   $('glossCount').textContent=FACHBEGRIFFE.length;
   $('glossList').innerHTML=FACHBEGRIFFE.map(t=>`<span>${esc(t)}</span>`).join('');
-  // Speech availability
-  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
-    $('speechNote').style.display='block';
-    $('transcript').contentEditable='true';
-    $('transcript').classList.add('editable');
-  }
+  // Transkript ist immer tippbar/diktierbar (iPad-Tastatur-Mikrofon, Einfügen)
+  const tr=$('transcript');
+  tr.contentEditable='true';
+  tr.classList.add('editable');
+  tr.setAttribute('inputmode','text');
+  tr.addEventListener('focus',()=>{ const ph=tr.querySelector('.ph'); if(ph) tr.innerHTML=''; });
+  tr.addEventListener('input',()=>{
+    state.transcript=tr.innerText.replace(/\s+/g,' ').trim();
+    $('analyzeBtn').disabled=!state.transcript;
+  });
 })();
 
 function updateMode(){
@@ -733,6 +761,50 @@ function exportData(fmt){
     downloadBlob(base+'.xls',new Blob(['﻿'+html],{type:'application/vnd.ms-excel;charset=utf-8;'}));
   }
   toast('Export erstellt');
+}
+
+/* ---------- Lokales Archiv (localStorage) ---------- */
+const ARC_KEY='hb_archive';
+function readArc(){ try{return JSON.parse(localStorage.getItem(ARC_KEY)||'[]');}catch(e){return[];} }
+function writeArc(a){ try{localStorage.setItem(ARC_KEY,JSON.stringify(a));}catch(e){toast('Speicher voll',true);} }
+
+function saveLocal(){
+  if(!state.summary){ toast('Erst eine Zusammenfassung erstellen',true); return; }
+  const p=buildPayload();
+  const name=[p.kunde.anrede,p.kunde.vorname,p.kunde.nachname].filter(Boolean).join(' ')||'(ohne Namen)';
+  const a=readArc();
+  a.unshift(Object.assign({id:Date.now(),name:name},p));
+  writeArc(a.slice(0,300));
+  toast('✓ Lokal auf diesem iPad gespeichert');
+}
+function openArchive(){ renderArc(); $('mdArchive').classList.add('on'); }
+function renderArc(){
+  const a=readArc(); $('arcCount').textContent=a.length;
+  $('arcList').innerHTML = a.length ? a.map(e=>`
+    <div style="display:flex;gap:8px;align-items:center;border:1px solid var(--divider);border-radius:12px;padding:11px 13px;margin-bottom:8px">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:650;font-size:.9rem">${esc(e.name)}</div>
+        <div style="font-size:.76rem;color:var(--textMid)">Kd-Nr. ${esc(e.kunde.kundennummer||'–')} · ${e.kunde.kundentyp} · ${new Date(e.zeitstempel).toLocaleString('de-DE')}</div>
+      </div>
+      <button class="icon-btn" title="Öffnen" onclick="loadArc(${e.id})">↗︎</button>
+      <button class="icon-btn" title="CSV" onclick="exportArc(${e.id})">⬇︎</button>
+      <button class="icon-btn" title="Löschen" onclick="delArc(${e.id})">🗑️</button>
+    </div>`).join('') : '<p style="color:var(--textMid);font-size:.88rem;padding:6px 2px">Noch keine gespeicherten Beratungen.</p>';
+}
+function loadArc(id){
+  const e=readArc().find(x=>x.id===id); if(!e) return;
+  $('anrede').value=e.kunde.anrede||''; $('vn').value=e.kunde.vorname||''; $('nn').value=e.kunde.nachname||'';
+  $('knr').value=e.kunde.kundennummer||''; $('gb').value=e.kunde.geburtsdatum||''; $('ber').value=e.kunde.berater||'';
+  setKundentyp(e.kunde.kundentyp||'Bestandskunde');
+  state.ts=new Date(e.zeitstempel); state.transcript=e.transkript||''; state.summary=e.zusammenfassung;
+  $('transcript').innerText=state.transcript;
+  closeModal('mdArchive'); go('sum'); renderSummary(e.zusammenfassung);
+  toast('Beratung geladen');
+}
+function exportArc(id){ loadArc(id); exportData('csv'); }
+function delArc(id){ writeArc(readArc().filter(x=>x.id!==id)); renderArc(); }
+function clearArchiveAll(){
+  if(confirm('Alle lokal gespeicherten Beratungen unwiderruflich löschen?')){ writeArc([]); renderArc(); toast('Archiv geleert'); }
 }
 
 /* ---------- Helpers ---------- */
